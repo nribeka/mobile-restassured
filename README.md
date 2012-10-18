@@ -9,4 +9,5 @@ Features:
 - Search API to search JSON based on keyword inside the index and transform the JSON based on registered algorithm
 
 Nyoman Ribeka
+
 nyoman@openmrs.org
