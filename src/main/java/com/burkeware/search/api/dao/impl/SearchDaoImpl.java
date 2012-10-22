@@ -14,22 +14,15 @@
 
 package com.burkeware.search.api.dao.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.burkeware.search.api.algorithm.Algorithm;
+import com.burkeware.search.api.dao.SearchDao;
 import com.burkeware.search.api.factory.SearchObjectFactory;
-import com.burkeware.search.api.provider.DirectoryProvider;
-import com.burkeware.search.api.provider.IndexReaderProvider;
-import com.burkeware.search.api.provider.IndexSearcherProvider;
-import com.burkeware.search.api.provider.IndexWriterProvider;
 import com.burkeware.search.api.provider.SearchProvider;
 import com.google.inject.Inject;
-import com.burkeware.search.api.dao.SearchDao;
 import com.google.inject.name.Named;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -42,7 +35,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
 public class SearchDaoImpl implements SearchDao {

@@ -14,12 +14,7 @@
 
 package com.burkeware.search.api.dao;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
-
-import com.burkeware.search.api.algorithm.Algorithm;
 
 /**
  * The interface where we define all low level search method.

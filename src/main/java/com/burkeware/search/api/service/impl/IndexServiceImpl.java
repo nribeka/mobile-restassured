@@ -17,7 +17,6 @@ package com.burkeware.search.api.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import com.burkeware.search.api.JsonLuceneConfig;
 import com.burkeware.search.api.dao.IndexDao;

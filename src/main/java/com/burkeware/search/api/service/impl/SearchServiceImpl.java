@@ -16,9 +16,9 @@ package com.burkeware.search.api.service.impl;
 
 import java.util.List;
 
-import com.google.inject.Inject;
 import com.burkeware.search.api.dao.SearchDao;
 import com.burkeware.search.api.service.SearchService;
+import com.google.inject.Inject;
 
 public class SearchServiceImpl implements SearchService {
 

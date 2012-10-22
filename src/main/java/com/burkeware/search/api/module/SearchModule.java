@@ -14,11 +14,10 @@
 
 package com.burkeware.search.api.module;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.burkeware.search.api.dao.IndexDao;
+import com.burkeware.search.api.dao.SearchDao;
 import com.burkeware.search.api.dao.impl.IndexDaoImpl;
+import com.burkeware.search.api.dao.impl.SearchDaoImpl;
 import com.burkeware.search.api.provider.AnalyzerProvider;
 import com.burkeware.search.api.provider.DirectoryProvider;
 import com.burkeware.search.api.provider.IndexReaderProvider;
@@ -27,28 +26,19 @@ import com.burkeware.search.api.provider.IndexWriterProvider;
 import com.burkeware.search.api.provider.SearchProvider;
 import com.burkeware.search.api.service.ConfigService;
 import com.burkeware.search.api.service.IndexService;
+import com.burkeware.search.api.service.SearchService;
 import com.burkeware.search.api.service.impl.ConfigServiceImpl;
 import com.burkeware.search.api.service.impl.IndexServiceImpl;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.burkeware.search.api.dao.SearchDao;
-import com.burkeware.search.api.dao.impl.SearchDaoImpl;
-import com.burkeware.search.api.service.SearchService;
 import com.burkeware.search.api.service.impl.SearchServiceImpl;
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
-import com.google.inject.throwingproviders.CheckedProvider;
-import com.google.inject.throwingproviders.CheckedProvides;
 import com.google.inject.throwingproviders.ThrowingProviderBinder;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
 public class SearchModule extends AbstractModule {

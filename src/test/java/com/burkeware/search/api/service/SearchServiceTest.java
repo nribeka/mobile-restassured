@@ -14,40 +14,20 @@
 
 package com.burkeware.search.api.service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import com.burkeware.search.api.JsonLuceneConfig;
-import com.burkeware.search.api.factory.SearchObjectFactory;
 import com.burkeware.search.api.module.SearchModule;
-import com.burkeware.search.api.provider.SearchProvider;
 import com.burkeware.search.api.sample.Patient;
 import com.burkeware.search.api.sample.PatientAlgorithm;
 import com.burkeware.search.api.util.JsonLuceneUtil;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.TypeLiteral;
-import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.util.Version;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

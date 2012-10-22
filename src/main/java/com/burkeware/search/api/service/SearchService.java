@@ -14,12 +14,7 @@
 
 package com.burkeware.search.api.service;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
-
-import com.burkeware.search.api.algorithm.Algorithm;
 
 public interface SearchService {
     /**

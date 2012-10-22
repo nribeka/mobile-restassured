@@ -18,9 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.google.inject.throwingproviders.CheckedProvider;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 

@@ -14,8 +14,8 @@
 
 package com.burkeware.search.api.sample;
 
-import com.jayway.jsonpath.JsonPath;
 import com.burkeware.search.api.algorithm.Algorithm;
+import com.jayway.jsonpath.JsonPath;
 
 public class PatientAlgorithm implements Algorithm<Patient> {
     /**
