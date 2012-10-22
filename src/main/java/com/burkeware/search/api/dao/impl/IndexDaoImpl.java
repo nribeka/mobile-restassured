@@ -16,10 +16,11 @@ package com.burkeware.search.api.dao.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,10 +29,11 @@ import com.burkeware.search.api.dao.IndexDao;
 import com.burkeware.search.api.provider.SearchProvider;
 import com.google.inject.Inject;
 import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.store.Directory;
 
 public class IndexDaoImpl implements IndexDao {
 
@@ -43,14 +45,71 @@ public class IndexDaoImpl implements IndexDao {
     }
 
     /**
+     * Write a single json representation as a single document entry inside Lucene index.
+     *
+     * @param config     the configuration to transform json to lucene document
+     * @param writer     the lucene's index writer
+     * @param jsonObject the json object to be written to the index
+     * @throws IOException when writing document failed
+     */
+    private void updateIndexInternal(final JsonLuceneConfig config, final IndexWriter writer, final Object jsonObject) throws IOException {
+        Document document = new Document();
+        document.add(new Field("_json", jsonObject.toString(), Field.Store.YES, Field.Index.NO));
+        document.add(new Field("_uuid", UUID.randomUUID().toString(), Field.Store.YES, Field.Index.NO));
+
+        Map<String, String> mappings = config.getMappings();
+        for (Map.Entry<String, String> entry : mappings.entrySet()) {
+            Object value = JsonPath.read(jsonObject, entry.getValue());
+            document.add(new Field(entry.getKey(), String.valueOf(value), Field.Store.YES, Field.Index.ANALYZED));
+        }
+        writer.addDocument(document);
+    }
+
+    /**
+     * Read json payload from the input stream.
+     *
+     * @param inputStream the input stream where the json payload will be read.
+     * @return the json payload
+     * @throws IOException when reading payload failed.
+     */
+    private String readJsonPayload(final InputStream inputStream) throws IOException {
+        String line;
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = reader.readLine()) != null)
+                builder.append(line);
+        } finally {
+            if (reader != null)
+                reader.close();
+        }
+        return builder.toString();
+    }
+
+    /**
      * Dao method to update the index with entries from the input stream.
      *
      * @param config      the j2l configuration file to be used to map the json payload to lucene document
      * @param inputStream input stream where json entries will be read
      */
     @Override
-    public void updateIndex(final JsonLuceneConfig config, final InputStream inputStream) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void updateIndex(final JsonLuceneConfig config, final InputStream inputStream) throws IOException {
+        IndexWriter writer = null;
+        try {
+            writer = writerProvider.get();
+            String json = readJsonPayload(inputStream);
+            Object jsonObject = JsonPath.read(json, config.getRepresentation());
+            if (jsonObject instanceof JSONArray) {
+                JSONArray array = (JSONArray) jsonObject;
+                for (Object element : array)
+                    updateIndexInternal(config, writer, element);
+            } else if (jsonObject instanceof JSONObject)
+                updateIndexInternal(config, writer, jsonObject);
+        } finally {
+            if (writer != null)
+                writer.close();
+        }
     }
 
     /**
@@ -60,47 +119,23 @@ public class IndexDaoImpl implements IndexDao {
      * @param directory directory information where json entries will be read
      */
     @Override
-    public void updateIndex(final JsonLuceneConfig config, final File directory) {
+    public void updateIndex(final JsonLuceneConfig config, final File directory) throws IOException {
+        IndexWriter writer = null;
         try {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                IndexWriter writer = writerProvider.get();
-                for (File corpusFile : files) {
-                    BufferedReader reader = new BufferedReader(new FileReader(corpusFile));
-
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    while ((line = reader.readLine()) != null)
-                        builder.append(line);
-                    reader.close();
-
-                    Document document = new Document();
-                    String json = builder.toString();
-                    document.add(new Field("_json", json, Field.Store.YES, Field.Index.NO));
-                    document.add(new Field("_uuid", UUID.randomUUID().toString(), Field.Store.YES, Field.Index.NO));
-
-                    Map<String, String> mappings = config.getMappings();
-                    for (Map.Entry<String, String> entry : mappings.entrySet()) {
-                        Object value = JsonPath.read(json, entry.getValue());
-                        document.add(new Field(entry.getKey(), String.valueOf(value), Field.Store.YES, Field.Index.ANALYZED));
-                    }
-                    writer.addDocument(document);
-                }
-                writer.close();
+            writer = writerProvider.get();
+            for (File corpusFile : directory.listFiles()) {
+                String json = readJsonPayload(new FileInputStream(corpusFile));
+                Object jsonObject = JsonPath.read(json, config.getRepresentation());
+                if (jsonObject instanceof JSONArray) {
+                    JSONArray array = (JSONArray) jsonObject;
+                    for (Object element : array)
+                        updateIndexInternal(config, writer, element);
+                } else if (jsonObject instanceof JSONObject)
+                    updateIndexInternal(config, writer, jsonObject);
             }
-        } catch (IOException e) {
-            // Ignoring again :)
+        } finally {
+            if (writer != null)
+                writer.close();
         }
-    }
-
-    /**
-     * Dao method to update the index with entries from the url.
-     *
-     * @param config the j2l configuration file to be used to map the json payload to lucene document
-     * @param url    the url where json entries will be read
-     */
-    @Override
-    public void updateIndex(final JsonLuceneConfig config, final URL url) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

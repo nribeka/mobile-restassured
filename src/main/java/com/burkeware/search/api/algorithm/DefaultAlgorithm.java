@@ -14,6 +14,27 @@
 
 package com.burkeware.search.api.algorithm;
 
-public class DefaultAlgorithm {
+public class DefaultAlgorithm<T> implements Algorithm<T> {
 
+    /**
+     * Implementation of this method will define how the object will be serialized from the JSON representation.
+     *
+     * @param json the json representation
+     * @return the concrete object
+     */
+    @Override
+    public T serialize(final Object json) {
+        return null;
+    }
+
+    /**
+     * Implementation of this method will define how the object will be deserialized into the JSON representation.
+     *
+     * @param t the object
+     * @return the json representation
+     */
+    @Override
+    public Object deserialize(final T t) {
+        return null;
+    }
 }

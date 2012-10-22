@@ -17,8 +17,7 @@ package com.burkeware.search.api.provider;
 import java.io.File;
 import java.io.IOException;
 
-import javax.inject.Inject;
-
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.google.inject.throwingproviders.CheckedProvider;

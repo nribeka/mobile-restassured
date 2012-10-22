@@ -91,7 +91,6 @@ public class SearchModule extends AbstractModule {
 
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexWriter.class)
-                .to(IndexWriterProvider.class)
-                .in(Singleton.class);
+                .to(IndexWriterProvider.class);
     }
 }

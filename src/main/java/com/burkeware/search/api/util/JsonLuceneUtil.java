@@ -14,34 +14,50 @@
 
 package com.burkeware.search.api.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import com.burkeware.search.api.JsonLuceneConfig;
 
 public class JsonLuceneUtil {
 
-    public static JsonLuceneConfig load(File file){
-        Map<String, String> templateMap = new TreeMap<String, String>();
+    public static JsonLuceneConfig load(File file) throws IOException {
 
-        try {
-            String line;
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            while ((line = reader.readLine()) != null) {
-                String[] templateFragment = line.split("=");
-                templateMap.put(templateFragment[0].trim(), templateFragment[1].trim());
-            }
-            reader.close();
-        } catch (IOException e) {
-            // Ignoring the exception again :)
-        }
+        JsonLuceneConfig config = new JsonLuceneConfig();
 
-        return new JsonLuceneConfig(templateMap);
+        Properties properties = new Properties();
+        properties.load(new FileReader(file));
+
+        if (!properties.containsKey(JsonLuceneConfig.OBJECT_TYPE)
+                || !properties.containsKey(JsonLuceneConfig.OBJECT_REPRESENTATION)
+                || !properties.containsKey(JsonLuceneConfig.OBJECT_REPRESENTATION_TYPE))
+            throw new IOException("Unable to read one or more required property from j2l file.");
+
+        Object objectType = properties.remove(JsonLuceneConfig.OBJECT_TYPE);
+        if (objectType == null)
+            throw new IOException("Object type value must not be null.");
+        config.setObjectType(String.valueOf(objectType));
+
+        Object representation = properties.remove(JsonLuceneConfig.OBJECT_REPRESENTATION);
+        if (representation== null)
+            throw new IOException("Representation value must not be null.");
+        config.setRepresentation(String.valueOf(representation));
+
+        Object representationType = properties.remove(JsonLuceneConfig.OBJECT_REPRESENTATION_TYPE);
+        if (representationType== null)
+            throw new IOException("Representation type value must not be null.");
+        config.setRepresentationType(String.valueOf(representationType));
+
+        Map<String, String> mappings = new TreeMap<String, String>();
+        for (Object object : properties.keySet())
+            mappings.put(String.valueOf(object), String.valueOf(properties.get(object)));
+        config.setMappings(mappings);
+
+        return config;
     }
 
 }

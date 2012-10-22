@@ -18,13 +18,49 @@ import java.util.Map;
 
 public class JsonLuceneConfig {
 
-    private final Map<String, String> mappings;
+    public static final String OBJECT_TYPE = "objectType";
 
-    public JsonLuceneConfig(final Map<String, String> mappings) {
-        this.mappings = mappings;
+    public static final String OBJECT_REPRESENTATION = "representation";
+
+    public static final String OBJECT_REPRESENTATION_TYPE = "representationType";
+
+    private String objectType;
+
+    private String representation;
+
+    private String representationType;
+
+    private Map<String, String> mappings;
+
+    public String getObjectType() {
+        return objectType;
+    }
+
+    public void setObjectType(final String objectType) {
+        this.objectType = objectType;
+    }
+
+    public String getRepresentation() {
+        return representation;
+    }
+
+    public void setRepresentation(final String representation) {
+        this.representation = representation;
+    }
+
+    public String getRepresentationType() {
+        return representationType;
+    }
+
+    public void setRepresentationType(final String representationType) {
+        this.representationType = representationType;
     }
 
     public Map<String, String> getMappings() {
         return mappings;
+    }
+
+    public void setMappings(final Map<String, String> mappings) {
+        this.mappings = mappings;
     }
 }

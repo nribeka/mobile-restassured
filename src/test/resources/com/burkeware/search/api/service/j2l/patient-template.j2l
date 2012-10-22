@@ -1,4 +1,6 @@
-_json=$
+objectType=com.burkeware.search.api.sample.Patient
+representationType=multi
+representation=$
 uuid=$.uuid
 identifier=$.identifiers[0].identifier
 name=$.person.display

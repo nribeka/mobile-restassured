@@ -58,14 +58,10 @@ public class SearchServiceTest {
     public static void prepareIndex() throws Exception {
         Injector injector = Guice.createInjector(new SearchModule());
 
-        URL j2l = GuiceInjectionTest.class.getResource("j2l/json-template.j2l");
+        URL j2l = GuiceInjectionTest.class.getResource("j2l/patient-template.j2l");
         JsonLuceneConfig config = JsonLuceneUtil.load(new File(j2l.getPath()));
         URL corpus = GuiceInjectionTest.class.getResource("corpus");
         File corpusDirectory = new File(corpus.getPath());
-
-        Key<SearchProvider<IndexWriter>> indexWriterKey = Key.get(new TypeLiteral<SearchProvider<IndexWriter>>() { });
-        SearchProvider<IndexWriter> indexWriterProvider = injector.getInstance(indexWriterKey);
-        IndexWriter indexWriter = indexWriterProvider.get();
 
         IndexService indexService = injector.getInstance(IndexService.class);
         indexService.updateIndex(config, corpusDirectory);
@@ -90,7 +86,7 @@ public class SearchServiceTest {
     }
 
     /**
-     * @verifies return objecst with matching search term
+     * @verifies return objects with matching search term
      * @see SearchService#getObjects(Class, String)
      */
     @Test
@@ -107,5 +103,20 @@ public class SearchServiceTest {
             Assert.assertTrue(patient.getName().startsWith("Testarius1"));
             log.info("Patient: " + patient.getName() + " with UUID: " + patient.getUuid());
         }
+    }
+
+    /**
+     * @verifies return null when no object match the key
+     * @see SearchService#getObject(Class, String)
+     */
+    public void getObject_shouldReturnNullWhenNoObjectMatchTheKey() throws Exception {
+        Injector injector = Guice.createInjector(new SearchModule());
+        // TODO: this should be done inside a bootstrap method to start the search service
+        ConfigService configService = injector.getInstance(ConfigService.class);
+        configService.registerAlgorithm(Patient.class, new PatientAlgorithm());
+
+        SearchService searchService = injector.getInstance(SearchService.class);
+        Patient patient = searchService.getObject(Patient.class, "Testarius9999");
+        Assert.assertNull(patient);
     }
 }

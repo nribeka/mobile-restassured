@@ -15,6 +15,7 @@
 package com.burkeware.search.api.dao;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -28,7 +29,7 @@ public interface IndexDao {
      * @param config      the j2l configuration file to be used to map the json payload to lucene document
      * @param inputStream input stream where json entries will be read
      */
-    void updateIndex(final JsonLuceneConfig config, final InputStream inputStream);
+    public void updateIndex(final JsonLuceneConfig config, final InputStream inputStream) throws IOException;
 
     /**
      * Dao method to update the index with entries from the file.
@@ -36,14 +37,6 @@ public interface IndexDao {
      * @param config    the j2l configuration file to be used to map the json payload to lucene document
      * @param directory directory information where json entries will be read
      */
-    void updateIndex(final JsonLuceneConfig config, final File directory);
-
-    /**
-     * Dao method to update the index with entries from the url.
-     *
-     * @param config the j2l configuration file to be used to map the json payload to lucene document
-     * @param url    the url where json entries will be read
-     */
-    void updateIndex(final JsonLuceneConfig config, final URL url);
+    void updateIndex(final JsonLuceneConfig config, final File directory) throws IOException;
 
 }

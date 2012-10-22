@@ -15,12 +15,12 @@
 package com.burkeware.search.api.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 import com.burkeware.search.api.JsonLuceneConfig;
 import com.burkeware.search.api.dao.IndexDao;
-import com.burkeware.search.api.dao.SearchDao;
 import com.burkeware.search.api.service.IndexService;
 import com.google.inject.Inject;
 
@@ -41,7 +41,11 @@ public class IndexServiceImpl implements IndexService {
      */
     @Override
     public void updateIndex(final JsonLuceneConfig config, final InputStream inputStream) {
-        dao.updateIndex(config, inputStream);
+        try {
+            dao.updateIndex(config, inputStream);
+        } catch (IOException e) {
+            // Ignoring again?
+        }
     }
 
     /**
@@ -52,17 +56,10 @@ public class IndexServiceImpl implements IndexService {
      */
     @Override
     public void updateIndex(final JsonLuceneConfig config, final File directory) {
-        dao.updateIndex(config, directory);
-    }
-
-    /**
-     * Service method to update the index with entries from the url.
-     *
-     * @param config the j2l configuration file to be used to map the json payload to lucene document
-     * @param url    the url where json entries will be read
-     */
-    @Override
-    public void updateIndex(final JsonLuceneConfig config, final URL url) {
-        dao.updateIndex(config, url);
+        try {
+            dao.updateIndex(config, directory);
+        } catch (IOException e) {
+            // Ignoring again?
+        }
     }
 }

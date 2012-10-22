@@ -27,6 +27,7 @@ public interface IndexService {
      *
      * @param config      the j2l configuration file to be used to map the json payload to lucene document
      * @param inputStream input stream where json entries will be read
+     * @should update the index using json data from the input stream
      */
     void updateIndex(final JsonLuceneConfig config, final InputStream inputStream);
 
@@ -35,14 +36,7 @@ public interface IndexService {
      *
      * @param config    the j2l configuration file to be used to map the json payload to lucene document
      * @param directory directory information where json entries will be read
+     * @should update the index using json data from file inside the directory
      */
     void updateIndex(final JsonLuceneConfig config, final File directory);
-
-    /**
-     * Service method to update the index with entries from the url.
-     *
-     * @param config the j2l configuration file to be used to map the json payload to lucene document
-     * @param url    the url where json entries will be read
-     */
-    void updateIndex(final JsonLuceneConfig config, final URL url);
 }
