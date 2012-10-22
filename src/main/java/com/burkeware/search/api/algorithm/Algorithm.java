@@ -24,16 +24,18 @@ public interface Algorithm<T> {
     /**
      * Implementation of this method will define how the object will be serialized from the JSON representation.
      *
+     *
      * @param json the json representation
      * @return the concrete object
      */
-    T serialize(final Object json);
+    T serialize(final String json);
 
     /**
      * Implementation of this method will define how the object will be deserialized into the JSON representation.
+     *
      * @param t the object
      * @return the json representation
      */
-    Object deserialize(final T t);
+    String deserialize(final T t);
 
 }

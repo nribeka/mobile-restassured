@@ -1,4 +1,4 @@
-objectType=com.burkeware.search.api.sample.Patient
+objectType=com.burkeware.search.api.sample.PatientCohort
 representationType=multi
 representation=$.results
 uuid=$.patient.uuid

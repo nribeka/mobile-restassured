@@ -1,5 +1,5 @@
 objectType=com.burkeware.search.api.sample.Patient
-representationType=multi
+representationType=single
 representation=$
 uuid=$.uuid
 identifier=$.identifiers[0].identifier

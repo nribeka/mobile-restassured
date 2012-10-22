@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.burkeware.search.api.algorithm.Algorithm;
 
+// TODO: use guice to make this class generic and can be injected
 public final class SearchObjectFactory {
 
     private Map<Class, Algorithm> algorithms = new HashMap<Class, Algorithm>();

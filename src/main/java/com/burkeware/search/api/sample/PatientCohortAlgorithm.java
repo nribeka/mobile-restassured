@@ -14,10 +14,10 @@
 
 package com.burkeware.search.api.sample;
 
-import com.jayway.jsonpath.JsonPath;
 import com.burkeware.search.api.algorithm.Algorithm;
+import com.jayway.jsonpath.JsonPath;
 
-public class PatientAlgorithm implements Algorithm<Patient> {
+public class PatientCohortAlgorithm implements Algorithm<PatientCohort> {
     /**
      * Implementation of this method will define how the patient will be serialized from the JSON representation.
      *
@@ -26,39 +26,39 @@ public class PatientAlgorithm implements Algorithm<Patient> {
      * @return the concrete patient object
      */
     @Override
-    public Patient serialize(final String json) {
-        Patient patient = new Patient();
+    public PatientCohort serialize(final String json) {
+        PatientCohort patientCohort = new PatientCohort();
 
         // get the full json object representation and then pass this around to the next JsonPath.read()
         // this should minimize the time for the subsequent read() call
         Object jsonObject = JsonPath.read(json, "$");
 
-        String uuid = JsonPath.read(jsonObject, "$.uuid");
-        patient.setUuid(uuid);
+        String uuid = JsonPath.read(jsonObject, "$.patient.uuid");
+        patientCohort.setUuid(uuid);
 
-        String name = JsonPath.read(jsonObject, "$.person.display");
-        patient.setName(name);
+        String name = JsonPath.read(jsonObject, "$.patient.person.display");
+        patientCohort.setName(name);
 
-        String identifier = JsonPath.read(jsonObject, "$.identifiers[0].identifier");
-        patient.setIdentifier(identifier);
+        String identifier = JsonPath.read(jsonObject, "$.patient.identifiers[0].display");
+        patientCohort.setIdentifier(identifier);
 
-        String gender = JsonPath.read(jsonObject, "$.person.gender");
-        patient.setGender(gender);
+        String gender = JsonPath.read(jsonObject, "$.patient.person.gender");
+        patientCohort.setGender(gender);
 
-        patient.setJson(json);
+        patientCohort.setJson(json);
 
-        return patient;
+        return patientCohort;
     }
 
     /**
      * Implementation of this method will define how the patient will be deserialized into the JSON representation.
      *
      *
-     * @param patient the patient
+     * @param patientCohort the patient
      * @return the json representation
      */
     @Override
-    public String deserialize(final Patient patient) {
-        return patient.getJson();
+    public String deserialize(final PatientCohort patientCohort) {
+        return patientCohort.getJson();
     }
 }

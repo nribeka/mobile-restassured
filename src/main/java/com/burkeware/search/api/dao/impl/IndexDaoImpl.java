@@ -56,11 +56,12 @@ public class IndexDaoImpl implements IndexDao {
         Document document = new Document();
         document.add(new Field("_json", jsonObject.toString(), Field.Store.YES, Field.Index.NO));
         document.add(new Field("_uuid", UUID.randomUUID().toString(), Field.Store.YES, Field.Index.NO));
+        document.add(new Field("_class", config.getObjectType(), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS));
 
         Map<String, String> mappings = config.getMappings();
         for (Map.Entry<String, String> entry : mappings.entrySet()) {
             Object value = JsonPath.read(jsonObject, entry.getValue());
-            document.add(new Field(entry.getKey(), String.valueOf(value), Field.Store.YES, Field.Index.ANALYZED));
+            document.add(new Field(entry.getKey(), String.valueOf(value), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS));
         }
         writer.addDocument(document);
     }

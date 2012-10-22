@@ -14,6 +14,7 @@
 
 package com.burkeware.search.api.provider;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -21,11 +22,17 @@ import org.apache.lucene.util.Version;
 
 public class AnalyzerProvider implements Provider<Analyzer> {
 
+    private final Version version;
+
     // TODO: create a factory that takes a hint of what type of analyzer should be returned here
     // see the example for checked provider
+    @Inject
+    public AnalyzerProvider(final Version version) {
+        this.version = version;
+    }
 
     @Override
     public Analyzer get() {
-        return new StandardAnalyzer(Version.LUCENE_36);
+        return new StandardAnalyzer(version);
     }
 }

@@ -42,8 +42,6 @@ import com.google.inject.throwingproviders.CheckedProvider;
 import com.google.inject.throwingproviders.CheckedProvides;
 import com.google.inject.throwingproviders.ThrowingProviderBinder;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -64,6 +62,8 @@ public class SearchModule extends AbstractModule {
         bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("/tmp/lucene");
         bind(String.class).annotatedWith(Names.named("configuration.lucene.document.key")).toInstance("name");
 
+        bind(Version.class).toInstance(Version.LUCENE_36);
+
         bind(SearchService.class).to(SearchServiceImpl.class).in(Singleton.class);
         bind(SearchDao.class).to(SearchDaoImpl.class).in(Singleton.class);
 
@@ -81,13 +81,11 @@ public class SearchModule extends AbstractModule {
 
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexReader.class)
-                .to(IndexReaderProvider.class)
-                .in(Singleton.class);
+                .to(IndexReaderProvider.class);
 
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexSearcher.class)
-                .to(IndexSearcherProvider.class)
-                .in(Singleton.class);
+                .to(IndexSearcherProvider.class);
 
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexWriter.class)

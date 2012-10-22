@@ -25,14 +25,17 @@ import org.apache.lucene.util.Version;
 
 public class IndexWriterProvider implements SearchProvider<IndexWriter> {
 
-    private SearchProvider<Directory> directoryProvider;
+    private final Version version;
 
-    private Analyzer analyzer;
+    private final Analyzer analyzer;
+
+    private final SearchProvider<Directory> directoryProvider;
 
     @Inject
-    public IndexWriterProvider(final SearchProvider<Directory> directoryProvider, final Analyzer analyzer) {
-        this.directoryProvider = directoryProvider;
+    public IndexWriterProvider(final Version version, final Analyzer analyzer, final SearchProvider<Directory> directoryProvider) {
+        this.version = version;
         this.analyzer = analyzer;
+        this.directoryProvider = directoryProvider;
     }
 
     @Override

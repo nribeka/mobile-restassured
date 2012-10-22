@@ -14,7 +14,7 @@
 
 package com.burkeware.search.api.sample;
 
-public class Patient {
+public class PatientCohort {
 
     private String uuid;
 

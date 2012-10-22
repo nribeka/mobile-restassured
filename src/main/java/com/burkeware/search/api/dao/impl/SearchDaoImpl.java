@@ -47,17 +47,11 @@ import org.apache.lucene.util.Version;
 
 public class SearchDaoImpl implements SearchDao {
 
-    private final Analyzer analyzer;
-
-    private final SearchProvider<Directory> directoryProvider;
-
     // TODO: we need to reuse the IndexReader as much as possible
     // Currently it's not being reused
     // TODO: we need to check if the IndexReader inside the SearchProvider is up to date.
     // The check is done to ensure that we're reading from an up-to-date index data.
     // method call: indexReader.isCurrent()
-    private final SearchProvider<IndexReader> readerProvider;
-
     private final SearchProvider<IndexWriter> writerProvider;
 
     private final SearchProvider<IndexSearcher> searcherProvider;
@@ -65,18 +59,25 @@ public class SearchDaoImpl implements SearchDao {
     private final QueryParser parser;
 
     @Inject
-    public SearchDaoImpl(final Analyzer analyzer,
-                         final SearchProvider<Directory> directoryProvider,
+    public SearchDaoImpl(final Version version, final Analyzer analyzer,
                          final SearchProvider<IndexReader> readerProvider,
                          final SearchProvider<IndexWriter> writerProvider,
                          final SearchProvider<IndexSearcher> searcherProvider,
                          final @Named("configuration.lucene.document.key") String key) {
-        this.analyzer = analyzer;
-        this.directoryProvider = directoryProvider;
-        this.readerProvider = readerProvider;
         this.writerProvider = writerProvider;
         this.searcherProvider = searcherProvider;
-        this.parser = new QueryParser(Version.LUCENE_36, key, analyzer);
+        this.parser = new QueryParser(version, key, analyzer);
+    }
+
+    /**
+     * Append class name filter in the query to make sure we're returning the correct object type.
+     *
+     * @param key   the key to the object
+     * @param clazz the expected return type of the object
+     * @return the new query with class clause in the query
+     */
+    private String appendClassQueryClause(final String key, final Class clazz) {
+        return key + " AND _class:" + clazz.getName();
     }
 
     /**
@@ -91,7 +92,7 @@ public class SearchDaoImpl implements SearchDao {
     public <T> T getObject(final Class<T> tClass, final String key) {
         T t = null;
 
-        List<Document> documents = searchDocuments(key, 1);
+        List<Document> documents = searchDocuments(appendClassQueryClause(key, tClass), 1);
         Algorithm algorithm = SearchObjectFactory.getInstance().getAlgorithm(tClass);
         for (Document document : documents) {
             String json = document.get("_json");
@@ -113,7 +114,7 @@ public class SearchDaoImpl implements SearchDao {
     public <T> List<T> getObjects(final Class<T> tClass, final String searchString) {
         List<T> tList = new ArrayList<T>();
 
-        List<Document> documents = searchDocuments(searchString, 10);
+        List<Document> documents = searchDocuments(appendClassQueryClause(searchString, tClass), 10);
         Algorithm algorithm = SearchObjectFactory.getInstance().getAlgorithm(tClass);
         for (Document document : documents) {
             String json = document.get("_json");
@@ -163,7 +164,7 @@ public class SearchDaoImpl implements SearchDao {
         T t = null;
         try {
             IndexWriter indexWriter = writerProvider.get();
-            List<Document> documents = searchDocuments(key, 1);
+            List<Document> documents = searchDocuments(appendClassQueryClause(key, tClass), 1);
             Algorithm algorithm = SearchObjectFactory.getInstance().getAlgorithm(tClass);
             for (Document document : documents) {
                 String json = document.get("_json");
