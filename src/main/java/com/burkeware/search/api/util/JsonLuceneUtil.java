@@ -15,8 +15,10 @@
 package com.burkeware.search.api.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -25,12 +27,16 @@ import com.burkeware.search.api.JsonLuceneConfig;
 
 public class JsonLuceneUtil {
 
-    public static JsonLuceneConfig load(File file) throws IOException {
+    public static JsonLuceneConfig load(final File file) throws IOException {
+        return load(new FileInputStream(file));
+    }
+
+    public static JsonLuceneConfig load(final InputStream inputStream) throws IOException {
 
         JsonLuceneConfig config = new JsonLuceneConfig();
 
         Properties properties = new Properties();
-        properties.load(new FileReader(file));
+        properties.load(inputStream);
 
         if (!properties.containsKey(JsonLuceneConfig.OBJECT_TYPE)
                 || !properties.containsKey(JsonLuceneConfig.OBJECT_REPRESENTATION)
