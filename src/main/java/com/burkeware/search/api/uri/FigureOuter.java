@@ -12,13 +12,15 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.uri;
 
-import com.google.inject.throwingproviders.CheckedProvider;
+public interface FigureOuter {
 
-import java.io.IOException;
-
-public interface SearchProvider<T> extends CheckedProvider<T> {
-
-    T get() throws IOException;
+    /**
+     * Return the full REST resource based on the search string passed to the method.
+     *
+     * @param searchString the search string
+     * @return full URI to the REST resource
+     */
+    String figureOutUri(final String searchString);
 }

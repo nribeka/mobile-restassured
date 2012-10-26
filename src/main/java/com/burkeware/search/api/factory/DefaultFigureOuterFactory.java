@@ -12,28 +12,21 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.factory;
 
+import com.burkeware.search.api.uri.FigureOuter;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.NIOFSDirectory;
 
-import java.io.File;
-import java.io.IOException;
+@Singleton
+public final class DefaultFigureOuterFactory extends DefaultFactory<FigureOuter> {
 
-public class DirectoryProvider implements SearchProvider<Directory> {
-
-    private final String directory;
-
-    // TODO: create a factory to customize the type of directory returned by this provider
+    /**
+     * The implementation of the base factory.
+     */
     @Inject
-    public DirectoryProvider(final @Named("configuration.lucene.directory") String directory) {
-        this.directory = directory;
-    }
-
-    @Override
-    public Directory get() throws IOException {
-        return NIOFSDirectory.open(new File(directory));
+    protected DefaultFigureOuterFactory(final @Named("FigureOuterFactory.name") String implementationName) {
+        super(implementationName);
     }
 }

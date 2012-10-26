@@ -14,24 +14,24 @@
 
 package com.burkeware.search.api.sample;
 
-import com.burkeware.search.api.algorithm.Algorithm;
+import com.burkeware.search.api.serialization.Algorithm;
 import com.jayway.jsonpath.JsonPath;
 
 public class PatientAlgorithm implements Algorithm<Patient> {
+
     /**
      * Implementation of this method will define how the patient will be serialized from the JSON representation.
      *
-     *
-     * @param json the json representation
+     * @param serialized the json representation
      * @return the concrete patient object
      */
     @Override
-    public Patient serialize(final String json) {
+    public Patient deserialize(final String serialized) {
         Patient patient = new Patient();
 
         // get the full json object representation and then pass this around to the next JsonPath.read()
         // this should minimize the time for the subsequent read() call
-        Object jsonObject = JsonPath.read(json, "$");
+        Object jsonObject = JsonPath.read(serialized, "$");
 
         String uuid = JsonPath.read(jsonObject, "$.uuid");
         patient.setUuid(uuid);
@@ -45,7 +45,7 @@ public class PatientAlgorithm implements Algorithm<Patient> {
         String gender = JsonPath.read(jsonObject, "$.person.gender");
         patient.setGender(gender);
 
-        patient.setJson(json);
+        patient.setJson(serialized);
 
         return patient;
     }
@@ -53,12 +53,11 @@ public class PatientAlgorithm implements Algorithm<Patient> {
     /**
      * Implementation of this method will define how the patient will be deserialized into the JSON representation.
      *
-     *
      * @param patient the patient
      * @return the json representation
      */
     @Override
-    public String deserialize(final Patient patient) {
+    public String serialize(final Patient patient) {
         return patient.getJson();
     }
 }

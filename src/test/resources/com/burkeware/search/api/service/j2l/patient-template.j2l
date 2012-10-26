@@ -1,9 +1,0 @@
-objectType=com.burkeware.search.api.sample.Patient
-representationType=single
-representation=$
-uuid=$.uuid
-identifier=$.identifiers[0].identifier
-name=$.person.display
-age=$.person.age
-gender=$.person.gender
-birthdate=$.person.birthdate

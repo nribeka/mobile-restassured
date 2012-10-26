@@ -14,89 +14,10 @@
 
 package com.burkeware.search.api.service;
 
-import java.io.File;
-import java.net.URL;
-import java.util.List;
-
-import com.burkeware.search.api.JsonLuceneConfig;
-import com.burkeware.search.api.module.SearchModule;
-import com.burkeware.search.api.sample.Patient;
-import com.burkeware.search.api.sample.PatientAlgorithm;
-import com.burkeware.search.api.util.JsonLuceneUtil;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class SearchServiceTest {
+
     private static final Log log = LogFactory.getLog(SearchServiceTest.class);
-
-    @BeforeClass
-    public static void prepareIndex() throws Exception {
-        Injector injector = Guice.createInjector(new SearchModule());
-
-        URL j2l = GuiceInjectionTest.class.getResource("j2l/patient-template.j2l");
-        JsonLuceneConfig config = JsonLuceneUtil.load(new File(j2l.getPath()));
-        URL corpus = GuiceInjectionTest.class.getResource("corpus");
-        File corpusDirectory = new File(corpus.getPath());
-
-        IndexService indexService = injector.getInstance(IndexService.class);
-        indexService.updateIndex(config, corpusDirectory);
-    }
-
-    /**
-     * @verifies return object with matching key
-     * @see SearchService#getObject(Class, String)
-     */
-    @Test
-    public void getObject_shouldReturnObjectWithMatchingKey() throws Exception {
-        Injector injector = Guice.createInjector(new SearchModule());
-        // TODO: this should be done inside a bootstrap method to start the search service
-        ConfigService configService = injector.getInstance(ConfigService.class);
-        configService.registerAlgorithm(Patient.class, new PatientAlgorithm());
-
-        SearchService searchService = injector.getInstance(SearchService.class);
-        Patient patient = searchService.getObject(Patient.class, "Testarius0 Ambote Indakasi");
-        Assert.assertEquals(Patient.class, patient.getClass());
-        Assert.assertEquals(patient.getName(), "Testarius0 Ambote Indakasi");
-        log.info("Patient: " + patient.getName() + " with UUID: " + patient.getUuid());
-    }
-
-    /**
-     * @verifies return objects with matching search term
-     * @see SearchService#getObjects(Class, String)
-     */
-    @Test
-    public void getObjects_shouldReturnObjecstWithMatchingSearchTerm() throws Exception {
-        Injector injector = Guice.createInjector(new SearchModule());
-
-        ConfigService configService = injector.getInstance(ConfigService.class);
-        configService.registerAlgorithm(Patient.class, new PatientAlgorithm());
-
-        SearchService searchService = injector.getInstance(SearchService.class);
-        List<Patient> patients = searchService.getObjects(Patient.class, "Testarius1?");
-        for (Patient patient : patients) {
-            Assert.assertEquals(Patient.class, patient.getClass());
-            Assert.assertTrue(patient.getName().startsWith("Testarius1"));
-            log.info("Patient: " + patient.getName() + " with UUID: " + patient.getUuid());
-        }
-    }
-
-    /**
-     * @verifies return null when no object match the key
-     * @see SearchService#getObject(Class, String)
-     */
-    public void getObject_shouldReturnNullWhenNoObjectMatchTheKey() throws Exception {
-        Injector injector = Guice.createInjector(new SearchModule());
-        // TODO: this should be done inside a bootstrap method to start the search service
-        ConfigService configService = injector.getInstance(ConfigService.class);
-        configService.registerAlgorithm(Patient.class, new PatientAlgorithm());
-
-        SearchService searchService = injector.getInstance(SearchService.class);
-        Patient patient = searchService.getObject(Patient.class, "Testarius9999");
-        Assert.assertNull(patient);
-    }
 }

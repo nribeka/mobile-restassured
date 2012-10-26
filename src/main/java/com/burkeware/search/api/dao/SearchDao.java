@@ -20,12 +20,13 @@ import java.util.List;
  * The interface where we define all low level search method.
  */
 public interface SearchDao {
+
     /**
      * DAO method to get an object of certain type based on the key.
      *
      * @param tClass the expected type of the object
-     * @param key the key to uniquely identify the object
-     * @param <T> the object type
+     * @param key    the key to uniquely identify the object
+     * @param <T>    the object type
      * @return the object uniquely identified by the key
      */
     <T> T getObject(final Class<T> tClass, final String key);
@@ -33,9 +34,9 @@ public interface SearchDao {
     /**
      * DAO method to search objects of certain type based on certain query term.
      *
-     * @param tClass the expected type of the object
+     * @param tClass       the expected type of the object
      * @param searchString the query term
-     * @param <T> the type of the object
+     * @param <T>          the type of the object
      * @return list of all matching objects
      */
     <T> List<T> getObjects(final Class<T> tClass, final String searchString);
@@ -44,8 +45,8 @@ public interface SearchDao {
      * DAO method to invalidate entry in the index.
      *
      * @param tClass the expected type of the object
-     * @param key the key to uniquely identify the object
-     * @param <T> the type of the object
+     * @param key    the key to uniquely identify the object
+     * @param <T>    the type of the object
      * @return the object that was invalidated by the method call
      */
     <T> T invalidate(final Class<T> tClass, final String key);

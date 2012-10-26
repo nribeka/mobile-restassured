@@ -14,18 +14,9 @@
 
 package com.burkeware.search.api.dao.impl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.UUID;
-
-import com.burkeware.search.api.JsonLuceneConfig;
 import com.burkeware.search.api.dao.IndexDao;
 import com.burkeware.search.api.provider.SearchProvider;
+import com.burkeware.search.api.resource.ObjectResource;
 import com.google.inject.Inject;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
@@ -33,6 +24,14 @@ import net.minidev.json.JSONObject;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.UUID;
 
 public class IndexDaoImpl implements IndexDao {
 
@@ -51,17 +50,10 @@ public class IndexDaoImpl implements IndexDao {
      * @param jsonObject the json object to be written to the index
      * @throws IOException when writing document failed
      */
-    private void updateIndexInternal(final JsonLuceneConfig config, final IndexWriter writer, final Object jsonObject) throws IOException {
+    private void updateIndexInternal(final ObjectResource config, final IndexWriter writer, final Object jsonObject) throws IOException {
         Document document = new Document();
         document.add(new Field("_json", jsonObject.toString(), Field.Store.YES, Field.Index.NO));
         document.add(new Field("_uuid", UUID.randomUUID().toString(), Field.Store.YES, Field.Index.NO));
-        document.add(new Field("_class", config.getObjectType(), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS));
-
-        Map<String, String> mappings = config.getMappings();
-        for (Map.Entry<String, String> entry : mappings.entrySet()) {
-            Object value = JsonPath.read(jsonObject, entry.getValue());
-            document.add(new Field(entry.getKey(), String.valueOf(value), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS));
-        }
         writer.addDocument(document);
     }
 
@@ -94,12 +86,12 @@ public class IndexDaoImpl implements IndexDao {
      * @param inputStream input stream where json entries will be read
      */
     @Override
-    public void updateIndex(final JsonLuceneConfig config, final InputStream inputStream) throws IOException {
+    public void updateIndex(final ObjectResource config, final InputStream inputStream) throws IOException {
         IndexWriter writer = null;
         try {
             writer = writerProvider.get();
             String json = readJsonPayload(inputStream);
-            Object jsonObject = JsonPath.read(json, config.getRepresentation());
+            Object jsonObject = JsonPath.read(json, config.getRootNode());
             if (jsonObject instanceof JSONArray) {
                 JSONArray array = (JSONArray) jsonObject;
                 for (Object element : array)
@@ -119,13 +111,13 @@ public class IndexDaoImpl implements IndexDao {
      * @param directory directory information where json entries will be read
      */
     @Override
-    public void updateIndex(final JsonLuceneConfig config, final File directory) throws IOException {
+    public void updateIndex(final ObjectResource config, final File directory) throws IOException {
         IndexWriter writer = null;
         try {
             writer = writerProvider.get();
             for (File corpusFile : directory.listFiles()) {
                 String json = readJsonPayload(new FileInputStream(corpusFile));
-                Object jsonObject = JsonPath.read(json, config.getRepresentation());
+                Object jsonObject = JsonPath.read(json, config.getRootNode());
                 if (jsonObject instanceof JSONArray) {
                     JSONArray array = (JSONArray) jsonObject;
                     for (Object element : array)

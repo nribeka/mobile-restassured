@@ -14,11 +14,11 @@
 
 package com.burkeware.search.api.provider;
 
-import java.io.IOException;
-
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
+
+import java.io.IOException;
 
 public class IndexReaderProvider implements SearchProvider<IndexReader> {
 

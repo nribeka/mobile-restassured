@@ -12,30 +12,29 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.algorithm;
+package com.burkeware.search.api.serialization;
 
 /**
- * Base interface to serialize and deserialize JSON into the correct object representation.
+ * Base interface to serialize and de-serialize String into the correct object representation.
  *
  * @param <T> the object representation
  */
 public interface Algorithm<T> {
 
     /**
-     * Implementation of this method will define how the object will be serialized from the JSON representation.
+     * Implementation of this method will define how the object will be serialized from the String representation.
      *
-     *
-     * @param json the json representation
+     * @param serialized the string representation
      * @return the concrete object
      */
-    T serialize(final String json);
+    T deserialize(final String serialized);
 
     /**
-     * Implementation of this method will define how the object will be deserialized into the JSON representation.
+     * Implementation of this method will define how the object will be de-serialized into the String representation.
      *
      * @param t the object
-     * @return the json representation
+     * @return the string representation
      */
-    String deserialize(final T t);
+    String serialize(final T t);
 
 }

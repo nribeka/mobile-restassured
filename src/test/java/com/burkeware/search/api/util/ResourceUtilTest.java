@@ -12,13 +12,12 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.util;
 
-import com.google.inject.throwingproviders.CheckedProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
+public class ResourceUtilTest {
 
-public interface SearchProvider<T> extends CheckedProvider<T> {
-
-    T get() throws IOException;
+    private static final Log log = LogFactory.getLog(ResourceUtilTest.class);
 }

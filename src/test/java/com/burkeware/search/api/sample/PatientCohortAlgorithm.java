@@ -14,51 +14,50 @@
 
 package com.burkeware.search.api.sample;
 
-import com.burkeware.search.api.algorithm.Algorithm;
+import com.burkeware.search.api.serialization.Algorithm;
 import com.jayway.jsonpath.JsonPath;
 
-public class PatientCohortAlgorithm implements Algorithm<PatientCohort> {
+public class PatientCohortAlgorithm implements Algorithm<Patient> {
+
     /**
      * Implementation of this method will define how the patient will be serialized from the JSON representation.
      *
-     *
-     * @param json the json representation
+     * @param serialized the json representation
      * @return the concrete patient object
      */
     @Override
-    public PatientCohort serialize(final String json) {
-        PatientCohort patientCohort = new PatientCohort();
+    public Patient deserialize(final String serialized) {
+        Patient patient = new Patient();
 
         // get the full json object representation and then pass this around to the next JsonPath.read()
         // this should minimize the time for the subsequent read() call
-        Object jsonObject = JsonPath.read(json, "$");
+        Object jsonObject = JsonPath.read(serialized, "$");
 
         String uuid = JsonPath.read(jsonObject, "$.patient.uuid");
-        patientCohort.setUuid(uuid);
+        patient.setUuid(uuid);
 
         String name = JsonPath.read(jsonObject, "$.patient.person.display");
-        patientCohort.setName(name);
+        patient.setName(name);
 
         String identifier = JsonPath.read(jsonObject, "$.patient.identifiers[0].display");
-        patientCohort.setIdentifier(identifier);
+        patient.setIdentifier(identifier);
 
         String gender = JsonPath.read(jsonObject, "$.patient.person.gender");
-        patientCohort.setGender(gender);
+        patient.setGender(gender);
 
-        patientCohort.setJson(json);
+        patient.setJson(serialized);
 
-        return patientCohort;
+        return patient;
     }
 
     /**
      * Implementation of this method will define how the patient will be deserialized into the JSON representation.
      *
-     *
-     * @param patientCohort the patient
+     * @param patient the patient
      * @return the json representation
      */
     @Override
-    public String deserialize(final PatientCohort patientCohort) {
-        return patientCohort.getJson();
+    public String serialize(final Patient patient) {
+        return patient.getJson();
     }
 }

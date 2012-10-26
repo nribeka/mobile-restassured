@@ -14,32 +14,23 @@
 
 package com.burkeware.search.api.module;
 
-import com.burkeware.search.api.dao.IndexDao;
-import com.burkeware.search.api.dao.SearchDao;
-import com.burkeware.search.api.dao.impl.IndexDaoImpl;
-import com.burkeware.search.api.dao.impl.SearchDaoImpl;
-import com.burkeware.search.api.provider.AnalyzerProvider;
-import com.burkeware.search.api.provider.DirectoryProvider;
-import com.burkeware.search.api.provider.IndexReaderProvider;
-import com.burkeware.search.api.provider.IndexSearcherProvider;
-import com.burkeware.search.api.provider.IndexWriterProvider;
-import com.burkeware.search.api.provider.SearchProvider;
-import com.burkeware.search.api.service.ConfigService;
-import com.burkeware.search.api.service.IndexService;
-import com.burkeware.search.api.service.SearchService;
-import com.burkeware.search.api.service.impl.ConfigServiceImpl;
-import com.burkeware.search.api.service.impl.IndexServiceImpl;
-import com.burkeware.search.api.service.impl.SearchServiceImpl;
+import com.burkeware.search.api.RestAssuredService;
+import com.burkeware.search.api.factory.DefaultAlgorithmFactory;
+import com.burkeware.search.api.factory.DefaultFigureOuterFactory;
+import com.burkeware.search.api.factory.DefaultResourceFactory;
+import com.burkeware.search.api.factory.internal.Factory;
+import com.burkeware.search.api.resource.internal.Registry;
+import com.burkeware.search.api.resource.internal.Resource;
+import com.burkeware.search.api.resource.registry.Properties;
+import com.burkeware.search.api.resource.registry.PropertiesRegistry;
+import com.burkeware.search.api.resource.registry.ResourceRegistry;
+import com.burkeware.search.api.serialization.Algorithm;
+import com.burkeware.search.api.service.RestAssuredServiceImpl;
+import com.burkeware.search.api.uri.FigureOuter;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import com.google.inject.throwingproviders.ThrowingProviderBinder;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
 
 public class SearchModule extends AbstractModule {
 
@@ -48,37 +39,36 @@ public class SearchModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        // TODO: hard coding this to tmp folder, should be read from configuration file
-        bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("/tmp/lucene");
-        bind(String.class).annotatedWith(Names.named("configuration.lucene.document.key")).toInstance("name");
+        bind(RestAssuredService.class).to(RestAssuredServiceImpl.class).in(Singleton.class);
 
-        bind(Version.class).toInstance(Version.LUCENE_36);
+        bind(new TypeLiteral<Registry<String, Resource>>() {
 
-        bind(SearchService.class).to(SearchServiceImpl.class).in(Singleton.class);
-        bind(SearchDao.class).to(SearchDaoImpl.class).in(Singleton.class);
+        })
+                .annotatedWith(Names.named("ResourceRegistry"))
+                .to(ResourceRegistry.class);
 
-        bind(ConfigService.class).to(ConfigServiceImpl.class).in(Singleton.class);
+        bind(new TypeLiteral<Registry<String, Properties>>() {
 
-        bind(IndexService.class).to(IndexServiceImpl.class).in(Singleton.class);
-        bind(IndexDao.class).to(IndexDaoImpl.class).in(Singleton.class);
+        })
+                .annotatedWith(Names.named("PropertiesRegistry"))
+                .to(PropertiesRegistry.class);
 
-        bind(Analyzer.class).toProvider(AnalyzerProvider.class);
+        bind(new TypeLiteral<Factory<Resource>>() {
 
-        ThrowingProviderBinder.create(binder())
-                .bind(SearchProvider.class, Directory.class)
-                .to(DirectoryProvider.class)
-                .in(Singleton.class);
+        })
+                .annotatedWith(Names.named("ResourceFactory"))
+                .to(DefaultResourceFactory.class);
 
-        ThrowingProviderBinder.create(binder())
-                .bind(SearchProvider.class, IndexReader.class)
-                .to(IndexReaderProvider.class);
+        bind(new TypeLiteral<Factory<Algorithm>>() {
 
-        ThrowingProviderBinder.create(binder())
-                .bind(SearchProvider.class, IndexSearcher.class)
-                .to(IndexSearcherProvider.class);
+        })
+                .annotatedWith(Names.named("AlgorithmFactory"))
+                .to(DefaultAlgorithmFactory.class);
 
-        ThrowingProviderBinder.create(binder())
-                .bind(SearchProvider.class, IndexWriter.class)
-                .to(IndexWriterProvider.class);
+        bind(new TypeLiteral<Factory<FigureOuter>>() {
+
+        })
+                .annotatedWith(Names.named("FigureOuterFactory"))
+                .to(DefaultFigureOuterFactory.class);
     }
 }

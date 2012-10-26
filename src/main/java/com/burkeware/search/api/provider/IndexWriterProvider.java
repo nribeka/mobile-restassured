@@ -14,14 +14,14 @@
 
 package com.burkeware.search.api.provider;
 
-import java.io.IOException;
-
 import com.google.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
+
+import java.io.IOException;
 
 public class IndexWriterProvider implements SearchProvider<IndexWriter> {
 
@@ -41,7 +41,7 @@ public class IndexWriterProvider implements SearchProvider<IndexWriter> {
     @Override
     public IndexWriter get() throws IOException {
         Directory directory = directoryProvider.get();
-        IndexWriterConfig  config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
         return new IndexWriter(directory, config);
     }
 }

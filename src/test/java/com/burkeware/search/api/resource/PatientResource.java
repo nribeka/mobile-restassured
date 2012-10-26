@@ -12,13 +12,15 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.resource;
 
-import com.google.inject.throwingproviders.CheckedProvider;
+import com.burkeware.search.api.serialization.Algorithm;
+import com.burkeware.search.api.uri.FigureOuter;
 
-import java.io.IOException;
+public class PatientResource<Patient> extends ObjectResource {
 
-public interface SearchProvider<T> extends CheckedProvider<T> {
-
-    T get() throws IOException;
+    public PatientResource(final String name, final String rootNode, final Class<Patient> objectClass,
+                           final Algorithm<Patient> algorithm, final FigureOuter figureOuter) {
+        super(name, rootNode, objectClass, algorithm, figureOuter);
+    }
 }

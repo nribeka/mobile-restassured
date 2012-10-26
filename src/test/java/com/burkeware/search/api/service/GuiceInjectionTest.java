@@ -46,6 +46,7 @@ public class GuiceInjectionTest {
         log.info("Injected Analyzer class: " + analyzer.getClass().getName());
 
         Key<SearchProvider<Directory>> directoryKey = Key.get(new TypeLiteral<SearchProvider<Directory>>() {
+
         });
         SearchProvider<Directory> directoryProvider = injector.getInstance(directoryKey);
         Directory directory = directoryProvider.get();
@@ -53,6 +54,7 @@ public class GuiceInjectionTest {
         log.info("Injected Directory class: " + directory.getClass().getName());
 
         Key<SearchProvider<IndexReader>> indexReaderKey = Key.get(new TypeLiteral<SearchProvider<IndexReader>>() {
+
         });
         SearchProvider<IndexReader> indexReaderProvider = injector.getInstance(indexReaderKey);
         IndexReader indexReader = indexReaderProvider.get();
@@ -60,6 +62,7 @@ public class GuiceInjectionTest {
         log.info("Injected IndexReader class: " + indexReader.getClass().getName());
 
         Key<SearchProvider<IndexSearcher>> indexSearcherKey = Key.get(new TypeLiteral<SearchProvider<IndexSearcher>>() {
+
         });
         SearchProvider<IndexSearcher> indexSearcherProvider = injector.getInstance(indexSearcherKey);
         IndexSearcher indexSearcher = indexSearcherProvider.get();
@@ -67,6 +70,7 @@ public class GuiceInjectionTest {
         log.info("Injected IndexSearcher class: " + indexSearcher.getClass().getName());
 
         Key<SearchProvider<IndexWriter>> indexWriterKey = Key.get(new TypeLiteral<SearchProvider<IndexWriter>>() {
+
         });
         SearchProvider<IndexWriter> indexWriterProvider = injector.getInstance(indexWriterKey);
         IndexWriter indexWriter = indexWriterProvider.get();
