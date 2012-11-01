@@ -11,10 +11,9 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package com.burkeware.search.api.exception;
 
-public class ParseException extends RuntimeException {
+public class LoggerException extends RuntimeException {
 
     /**
      * Constructs a new runtime exception with the specified detail message.
@@ -24,14 +23,14 @@ public class ParseException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public ParseException(final String message) {
+    public LoggerException(final String message) {
         super(message);
     }
 
     /**
      * Constructs a new runtime exception with the specified detail message and
      * cause.  <p>Note that the detail message associated with
-     * <code>cause</code> is <i>not</i> automatically incorporated in
+     * {@code cause} is <i>not</i> automatically incorporated in
      * this runtime exception's detail message.
      *
      * @param message the detail message (which is saved for later retrieval
@@ -42,7 +41,7 @@ public class ParseException extends RuntimeException {
      *                unknown.)
      * @since 1.4
      */
-    public ParseException(final String message, final Throwable cause) {
+    public LoggerException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

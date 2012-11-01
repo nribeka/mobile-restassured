@@ -11,22 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
-package com.burkeware.search.api.resource.registry;
-
-import com.burkeware.search.api.resource.internal.Registry;
-import com.google.inject.Singleton;
+package com.burkeware.search.api.registry;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
-public class PropertiesRegistry implements Registry<String, Properties> {
+public class DefaultRegistry<K, V> implements Registry<K, V> {
 
-    private Map<String, Properties> entries;
+    private Map<K, V> entries;
 
-    public PropertiesRegistry() {
-        entries = new HashMap<String, Properties>();
+    public DefaultRegistry() {
+        entries = new HashMap<K, V>();
     }
 
     /**
@@ -36,7 +31,7 @@ public class PropertiesRegistry implements Registry<String, Properties> {
      * @return true if the key is already registered, false otherwise
      */
     @Override
-    public boolean hasEntry(final String key) {
+    public boolean hasEntry(final K key) {
         return entries.containsKey(key);
     }
 
@@ -47,7 +42,7 @@ public class PropertiesRegistry implements Registry<String, Properties> {
      * @param value the value to be registered
      */
     @Override
-    public void putEntry(final String key, final Properties value) {
+    public void putEntry(final K key, final V value) {
         getEntries().put(key, value);
     }
 
@@ -56,7 +51,7 @@ public class PropertiesRegistry implements Registry<String, Properties> {
      * @return the registry's value
      */
     @Override
-    public Properties getEntryValue(final String key) {
+    public V getEntryValue(final K key) {
         return getEntries().get(key);
     }
 
@@ -64,7 +59,8 @@ public class PropertiesRegistry implements Registry<String, Properties> {
      * @return the list of all entries in the registry set
      */
     @Override
-    public Map<String, Properties> getEntries() {
+    public Map<K, V> getEntries() {
         return this.entries;
     }
+
 }

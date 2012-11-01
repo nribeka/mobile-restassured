@@ -12,21 +12,13 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.factory;
+package com.burkeware.search.api.internal.provider;
 
-import com.burkeware.search.api.serialization.Algorithm;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import com.google.inject.throwingproviders.CheckedProvider;
 
-@Singleton
-public final class DefaultAlgorithmFactory extends DefaultFactory<Algorithm> {
+import java.io.IOException;
 
-    /**
-     * The implementation of the base factory.
-     */
-    @Inject
-    protected DefaultAlgorithmFactory(final @Named("AlgorithmFactory.name") String implementationName) {
-        super(implementationName);
-    }
+public interface SearchProvider<T> extends CheckedProvider<T> {
+
+    T get() throws IOException;
 }

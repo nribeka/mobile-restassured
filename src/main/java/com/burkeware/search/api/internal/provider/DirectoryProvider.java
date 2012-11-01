@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.internal.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -28,7 +28,7 @@ public class DirectoryProvider implements SearchProvider<Directory> {
 
     // TODO: create a factory to customize the type of directory returned by this provider
     @Inject
-    public DirectoryProvider(final @Named("configuration.lucene.directory") String directory) {
+    protected DirectoryProvider(final @Named("configuration.lucene.directory") String directory) {
         this.directory = directory;
     }
 

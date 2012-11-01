@@ -12,26 +12,37 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.internal.provider;
 
 import com.google.inject.Inject;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 
-public class IndexReaderProvider implements SearchProvider<IndexReader> {
+public class IndexWriterProvider implements SearchProvider<IndexWriter> {
+
+    private final Version version;
+
+    private final Analyzer analyzer;
 
     private final SearchProvider<Directory> directoryProvider;
 
     @Inject
-    public IndexReaderProvider(final SearchProvider<Directory> directoryProvider) {
+    protected IndexWriterProvider(final Version version, final Analyzer analyzer,
+                                  final SearchProvider<Directory> directoryProvider) {
+        this.version = version;
+        this.analyzer = analyzer;
         this.directoryProvider = directoryProvider;
     }
 
     @Override
-    public IndexReader get() throws IOException {
+    public IndexWriter get() throws IOException {
         Directory directory = directoryProvider.get();
-        return IndexReader.open(directory);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+        return new IndexWriter(directory, config);
     }
 }

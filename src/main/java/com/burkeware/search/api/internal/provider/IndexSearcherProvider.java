@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.internal.provider;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexReader;
@@ -25,7 +25,7 @@ public class IndexSearcherProvider implements SearchProvider<IndexSearcher> {
     private SearchProvider<IndexReader> readerProvider;
 
     @Inject
-    public IndexSearcherProvider(final SearchProvider<IndexReader> readerProvider) {
+    protected IndexSearcherProvider(final SearchProvider<IndexReader> readerProvider) {
         this.readerProvider = readerProvider;
     }
 

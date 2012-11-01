@@ -34,6 +34,36 @@ public class StringUtil {
 
     /**
      * <pre>
+     * StringUtils.defaultString(null)  = ""
+     * StringUtils.defaultString("")    = ""
+     * StringUtils.defaultString("bat") = "bat"
+     * </pre>
+     *
+     * @param str the String to check, may be null
+     * @return the passed in String, or the empty String if it was <code>null</code>
+     * @see String#valueOf(Object)
+     */
+    public static String defaultString(String str) {
+        return str == null ? EMPTY : str;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.defaultString(null, "NULL")  = "NULL"
+     * StringUtils.defaultString("", "NULL")    = ""
+     * StringUtils.defaultString("bat", "NULL") = "bat"
+     * </pre>
+     *
+     * @param str        the String to check, may be null
+     * @param defaultStr the default String to return if the input is <code>null</code>, may be null
+     * @return the passed in String, or the default if it was <code>null</code>
+     */
+    public static String defaultString(String str, String defaultStr) {
+        return str == null ? defaultStr : str;
+    }
+
+    /**
+     * <pre>
      * StringUtil.equals(null, null)   = true
      * StringUtil.equals(null, "abc")  = false
      * StringUtil.equals("abc", null)  = false

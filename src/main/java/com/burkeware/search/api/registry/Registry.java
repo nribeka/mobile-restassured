@@ -12,23 +12,11 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.resource.registry;
+package com.burkeware.search.api.registry;
 
-import com.burkeware.search.api.resource.internal.Registry;
-import com.burkeware.search.api.resource.internal.Resource;
-import com.google.inject.Singleton;
-
-import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
-public class ResourceRegistry implements Registry<String, Resource> {
-
-    private Map<String, Resource> entries;
-
-    public ResourceRegistry() {
-        entries = new HashMap<String, Resource>();
-    }
+public interface Registry<K, V> {
 
     /**
      * Check whether the key is already registered or not
@@ -36,10 +24,7 @@ public class ResourceRegistry implements Registry<String, Resource> {
      * @param key the key
      * @return true if the key is already registered, false otherwise
      */
-    @Override
-    public boolean hasEntry(final String key) {
-        return entries.containsKey(key);
-    }
+    boolean hasEntry(K key);
 
     /**
      * Generic method to add a new entry into the registry
@@ -47,25 +32,16 @@ public class ResourceRegistry implements Registry<String, Resource> {
      * @param key   the key to the element in the registry
      * @param value the value to be registered
      */
-    @Override
-    public void putEntry(final String key, final Resource value) {
-        getEntries().put(key, value);
-    }
+    void putEntry(K key, V value);
 
     /**
      * @param key the key to value we would like to return
      * @return the registry's value
      */
-    @Override
-    public Resource getEntryValue(final String key) {
-        return getEntries().get(key);
-    }
+    V getEntryValue(K key);
 
     /**
      * @return the list of all entries in the registry set
      */
-    @Override
-    public Map<String, Resource> getEntries() {
-        return this.entries;
-    }
+    Map<K, V> getEntries();
 }

@@ -15,12 +15,12 @@
 package com.burkeware.search.api.resource;
 
 import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.uri.FigureOuter;
 
 public class PatientResource<Patient> extends ObjectResource {
 
-    public PatientResource(final String name, final String rootNode, final Class<Patient> objectClass,
-                           final Algorithm<Patient> algorithm, final FigureOuter figureOuter) {
-        super(name, rootNode, objectClass, algorithm, figureOuter);
+    public PatientResource(final String name, final String rootNode,
+                           final Class<Patient> objectClass,
+                           final Algorithm<Patient> algorithm) {
+        super(name, rootNode, objectClass, algorithm);
     }
 }

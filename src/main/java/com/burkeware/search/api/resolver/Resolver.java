@@ -12,21 +12,15 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.factory;
+package com.burkeware.search.api.resolver;
 
-import com.burkeware.search.api.uri.FigureOuter;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-
-@Singleton
-public final class DefaultFigureOuterFactory extends DefaultFactory<FigureOuter> {
+public interface Resolver {
 
     /**
-     * The implementation of the base factory.
+     * Return the full REST resource based on the search string passed to the method.
+     *
+     * @param searchString the search string
+     * @return full URI to the REST resource
      */
-    @Inject
-    protected DefaultFigureOuterFactory(final @Named("FigureOuterFactory.name") String implementationName) {
-        super(implementationName);
-    }
+    String resolve(final String searchString);
 }

@@ -15,7 +15,7 @@
 package com.burkeware.search.api.dao.impl;
 
 import com.burkeware.search.api.dao.IndexDao;
-import com.burkeware.search.api.provider.SearchProvider;
+import com.burkeware.search.api.internal.provider.SearchProvider;
 import com.burkeware.search.api.resource.ObjectResource;
 import com.google.inject.Inject;
 import com.jayway.jsonpath.JsonPath;
@@ -50,7 +50,8 @@ public class IndexDaoImpl implements IndexDao {
      * @param jsonObject the json object to be written to the index
      * @throws IOException when writing document failed
      */
-    private void updateIndexInternal(final ObjectResource config, final IndexWriter writer, final Object jsonObject) throws IOException {
+    private void updateIndexInternal(final ObjectResource config, final IndexWriter writer,
+                                     final Object jsonObject) throws IOException {
         Document document = new Document();
         document.add(new Field("_json", jsonObject.toString(), Field.Store.YES, Field.Index.NO));
         document.add(new Field("_uuid", UUID.randomUUID().toString(), Field.Store.YES, Field.Index.NO));

@@ -11,16 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.object;
 
-package com.burkeware.search.api.uri;
+public interface RestAssured {
 
-public interface FigureOuter {
+    String getJson();
 
-    /**
-     * Return the full REST resource based on the search string passed to the method.
-     *
-     * @param searchString the search string
-     * @return full URI to the REST resource
-     */
-    String figureOutUri(final String searchString);
+    void setJson(final String json);
+
 }

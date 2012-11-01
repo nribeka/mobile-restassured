@@ -14,9 +14,9 @@
 
 package com.burkeware.search.api.sample;
 
-import com.burkeware.search.api.uri.FigureOuter;
+import com.burkeware.search.api.resolver.Resolver;
 
-public class PatientFigureOuter implements FigureOuter {
+public class PatientResolver implements Resolver {
 
     /**
      * Return the full URI to the REST resource based on the search string passed to the method.
@@ -25,7 +25,7 @@ public class PatientFigureOuter implements FigureOuter {
      * @return full URI to the REST resource
      */
     @Override
-    public String figureOutUri(final String searchString) {
+    public String resolve(final String searchString) {
         return "http://localhost:8080/openmrs/ws/rest/v1/patient?q=" + searchString;
     }
 }

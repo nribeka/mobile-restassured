@@ -14,30 +14,9 @@
 
 package com.burkeware.search.api;
 
-import com.burkeware.search.api.factory.DefaultAlgorithmFactory;
-import com.burkeware.search.api.factory.DefaultFigureOuterFactory;
-import com.burkeware.search.api.factory.DefaultResourceFactory;
-import com.burkeware.search.api.factory.internal.Factory;
-import com.burkeware.search.api.module.FactoryModule;
-import com.burkeware.search.api.module.SearchModule;
-import com.burkeware.search.api.resource.ObjectResource;
-import com.burkeware.search.api.resource.internal.Resource;
-import com.burkeware.search.api.resource.registry.Properties;
-import com.burkeware.search.api.resource.registry.PropertiesRegistry;
-import com.burkeware.search.api.sample.PatientCohortAlgorithm;
-import com.burkeware.search.api.sample.PatientFigureOuter;
-import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.uri.FigureOuter;
-import com.burkeware.search.api.util.ResourceUtil;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-
-import java.io.File;
-import java.net.URL;
 
 public class RestAssuredServiceTest {
 
@@ -49,31 +28,5 @@ public class RestAssuredServiceTest {
      */
     @Test
     public void addResources_shouldAddAnyResourcesInsideTheFile() throws Exception {
-
-        Injector injector = Guice.createInjector(new FactoryModule(), new SearchModule());
-
-        URL j2l = this.getClass().getResource("j2l/cohort-template.j2l");
-        Properties properties = ResourceUtil.loadResourceConfig(new File(j2l.getPath()));
-
-        String resourceName = properties.getEntryValue(Resource.RESOURCE_NAME);
-
-        PropertiesRegistry propertiesRegistry = injector.getInstance(PropertiesRegistry.class);
-        Assert.assertNotNull(propertiesRegistry);
-
-        propertiesRegistry.putEntry(resourceName, properties);
-
-        Factory<Resource> resourceFactory = injector.getInstance(DefaultResourceFactory.class);
-        resourceFactory.registerImplementation(resourceName, ObjectResource.class);
-
-        Factory<Algorithm> algorithmFactory = injector.getInstance(DefaultAlgorithmFactory.class);
-        algorithmFactory.registerImplementation(resourceName, PatientCohortAlgorithm.class);
-
-        Factory<FigureOuter> figureOuterFactory = injector.getInstance(DefaultFigureOuterFactory.class);
-        figureOuterFactory.registerImplementation(resourceName, PatientFigureOuter.class);
-
-        Resource resource = resourceFactory.createImplementation(properties.getEntryValue(Resource.RESOURCE_NAME));
-
-        Assert.assertNotNull(resource);
-        log.info("Created new resource with name: " + resource.getName());
     }
 }

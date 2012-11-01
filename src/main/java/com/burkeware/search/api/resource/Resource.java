@@ -12,13 +12,8 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.resource.internal;
+package com.burkeware.search.api.resource;
 
-import com.burkeware.search.api.resource.SearchableField;
-import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.uri.FigureOuter;
-
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,24 +26,6 @@ import java.util.List;
  * @param <T> the object for which the resource is applicable
  */
 public interface Resource<T> {
-
-    String RESOURCE_NAME = "resourceName";
-
-    String RESOURCE_CLASS = "resourceClass";
-
-    String RESOURCE_ROOT_NODE = "rootNode";
-
-    String RESOURCE_UNIQUE_FIELD = "uniqueField";
-
-    String RESOURCE_ALGORITHM_CLASS = "algorithm.class";
-
-    String RESOURCE_URI_CLASS = "uriFigureOuter.class";
-
-    List<String> NON_SEARCHABLE_FIELDS = Arrays.asList(RESOURCE_NAME, RESOURCE_CLASS, RESOURCE_ROOT_NODE,
-            RESOURCE_UNIQUE_FIELD, RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_CLASS);
-
-    List<String> MANDATORY_FIELDS = Arrays.asList(RESOURCE_NAME, RESOURCE_CLASS, RESOURCE_ROOT_NODE,
-            RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_CLASS);
 
     String getName();
 
@@ -141,48 +118,38 @@ public interface Resource<T> {
      *
      * @return the class for which this resource applicable to.
      */
-    Class<T> getResourceClass();
-
-    /**
-     * Get class which will perform the serialization and de-serialization process from String representation to the
-     * correct object representation.
-     *
-     * @return the serialization algorithm class for this resource implementation
-     */
-    Algorithm<T> getAlgorithm();
-
-    /**
-     * Get class which will resolve the REST resource URI for this particular resource.
-     *
-     * @return the resource's FigureOuter
-     */
-    FigureOuter getFigureOuter();
+    Class getResourceObject();
 
     /**
      * Add a new searchable field for the current resource object. Searchable field is a field on which a client can
-     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache.org/">Lucene</a>
+     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache
+     * .org/">Lucene</a>
      * query.
      *
      * @param name       the name of the field
      * @param expression the JsonPath expression to retrieve the value for the field
      * @param unique     flag whether this field can uniquely identify an object for this resource
-     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query Syntax</a>
+     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
+     * Syntax</a>
      * @see <a href="http://goessner.net/articles/JsonPath/">JsonPath Operators</a>
      */
     void addFieldDefinition(String name, String expression, Boolean unique);
 
     /**
      * Get all searchable fields configuration for this resource. Searchable field are a field on which a client can
-     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache.org/">Lucene</a>
+     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache
+     * .org/">Lucene</a>
      * query.
      *
      * @return the list of all searchable fields for this resource
-     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query Syntax</a>
+     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
+     * Syntax</a>
      */
     List<SearchableField> getSearchableFields();
 
     /**
-     * Perform serialization for the object and returning the String representation of the object. Default implementation
+     * Perform serialization for the object and returning the String representation of the object. Default
+     * implementation
      * of this should delegate the serialization to the <code>Algorithm</code> object.
      *
      * @param t the object
@@ -201,7 +168,7 @@ public interface Resource<T> {
 
     /**
      * Get the URI for the resource where the api can retrieve data. Default implementation should delegate this call to
-     * the <code>FigureOuter</code> class.
+     * the <code>Resolver</code> class.
      *
      * @param searchString the search term for the REST URI
      * @return the full REST URI with the search string

@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.factory.internal;
+package com.burkeware.search.api.internal.factory;
 
 import java.util.List;
 import java.util.Map;

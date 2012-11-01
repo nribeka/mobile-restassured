@@ -14,7 +14,17 @@
 
 package com.burkeware.search.api.module;
 
+import com.burkeware.search.api.internal.factory.DefaultAlgorithmFactory;
+import com.burkeware.search.api.internal.factory.DefaultResolverFactory;
+import com.burkeware.search.api.internal.factory.Factory;
+import com.burkeware.search.api.registry.DefaultRegistry;
+import com.burkeware.search.api.registry.Registry;
+import com.burkeware.search.api.resolver.Resolver;
+import com.burkeware.search.api.resource.Resource;
+import com.burkeware.search.api.serialization.Algorithm;
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
 public class FactoryModule extends AbstractModule {
@@ -28,11 +38,28 @@ public class FactoryModule extends AbstractModule {
                 .annotatedWith(Names.named("AlgorithmFactory.name"))
                 .toInstance("Algorithm");
         bind(String.class)
-                .annotatedWith(Names.named("FigureOuterFactory.name"))
-                .toInstance("FigureOuter");
-        bind(String.class)
-                .annotatedWith(Names.named("ResourceFactory.name"))
-                .toInstance("Resource");
+                .annotatedWith(Names.named("ResolverFactory.name"))
+                .toInstance("Resolver");
+
+        bind(new TypeLiteral<Registry<String, Resource>>() {})
+                .toInstance(new DefaultRegistry<String, Resource>());
+
+        bind(new TypeLiteral<Registry<String, Registry<String, String>>>() {})
+                .toInstance(new DefaultRegistry<String, Registry<String, String>>());
+
+        bind(new TypeLiteral<Registry<String, Class>>() {})
+                .toInstance(new DefaultRegistry<String, Class>());
+
+        bind(DefaultRegistry.class).in(Singleton.class);
+
+        bind(new TypeLiteral<Factory<Algorithm>>() {})
+                .to(DefaultAlgorithmFactory.class);
+
+        bind(new TypeLiteral<Factory<Resolver>>() {})
+                .to(DefaultResolverFactory.class);
+
+        bind(DefaultAlgorithmFactory.class).in(Singleton.class);
+        bind(DefaultResolverFactory.class).in(Singleton.class);
 
     }
 }

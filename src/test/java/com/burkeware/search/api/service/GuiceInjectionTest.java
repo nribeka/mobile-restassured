@@ -14,22 +14,16 @@
 
 package com.burkeware.search.api.service;
 
-import com.burkeware.search.api.module.SearchModule;
-import com.burkeware.search.api.provider.SearchProvider;
+import com.burkeware.search.api.module.FactoryModule;
+import com.burkeware.search.api.registry.Registry;
+import com.burkeware.search.api.resource.Resource;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import junit.framework.Assert;
+import com.google.inject.name.Names;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.NIOFSDirectory;
 import org.junit.Test;
 
 public class GuiceInjectionTest {
@@ -39,43 +33,20 @@ public class GuiceInjectionTest {
     @Test
     public void registerPatientAlgorithm() throws Exception {
 
-        Injector injector = Guice.createInjector(new SearchModule());
+        Injector injector = Guice.createInjector(new FactoryModule());
 
-        Analyzer analyzer = injector.getInstance(Analyzer.class);
-        Assert.assertEquals(StandardAnalyzer.class, analyzer.getClass());
-        log.info("Injected Analyzer class: " + analyzer.getClass().getName());
+        String name = injector.getInstance(Key.get(String.class, Names.named("AlgorithmFactory.name")));
+        log.info("Value for AlgorithmFactory name is: " + name);
 
-        Key<SearchProvider<Directory>> directoryKey = Key.get(new TypeLiteral<SearchProvider<Directory>>() {
+        Registry registry = injector.getInstance(Key.get(new TypeLiteral<Registry<String, Resource>>() {},
+                Names.named("ResourceRegistry")));
+        log.info("Registry class" + registry);
+        registry.putEntry("Example", "Data");
+        log.info("Registry class" + registry.getEntryValue("Example"));
 
-        });
-        SearchProvider<Directory> directoryProvider = injector.getInstance(directoryKey);
-        Directory directory = directoryProvider.get();
-        Assert.assertEquals(NIOFSDirectory.class, directory.getClass());
-        log.info("Injected Directory class: " + directory.getClass().getName());
-
-        Key<SearchProvider<IndexReader>> indexReaderKey = Key.get(new TypeLiteral<SearchProvider<IndexReader>>() {
-
-        });
-        SearchProvider<IndexReader> indexReaderProvider = injector.getInstance(indexReaderKey);
-        IndexReader indexReader = indexReaderProvider.get();
-        Assert.assertTrue(IndexReader.class.isAssignableFrom(indexReader.getClass()));
-        log.info("Injected IndexReader class: " + indexReader.getClass().getName());
-
-        Key<SearchProvider<IndexSearcher>> indexSearcherKey = Key.get(new TypeLiteral<SearchProvider<IndexSearcher>>() {
-
-        });
-        SearchProvider<IndexSearcher> indexSearcherProvider = injector.getInstance(indexSearcherKey);
-        IndexSearcher indexSearcher = indexSearcherProvider.get();
-        Assert.assertTrue(IndexSearcher.class.isAssignableFrom(indexSearcher.getClass()));
-        log.info("Injected IndexSearcher class: " + indexSearcher.getClass().getName());
-
-        Key<SearchProvider<IndexWriter>> indexWriterKey = Key.get(new TypeLiteral<SearchProvider<IndexWriter>>() {
-
-        });
-        SearchProvider<IndexWriter> indexWriterProvider = injector.getInstance(indexWriterKey);
-        IndexWriter indexWriter = indexWriterProvider.get();
-        Assert.assertTrue(IndexWriter.class.isAssignableFrom(indexWriter.getClass()));
-        log.info("Injected IndexWriter class: " + indexWriter.getClass().getName());
+        registry = injector.getInstance(Key.get(new TypeLiteral<Registry<String, Resource>>() {},
+                Names.named("ResourceRegistry")));
+        log.info("Registry class" + registry.getEntryValue("Example"));
     }
 
 }

@@ -11,14 +11,21 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.util;
 
-package com.burkeware.search.api.provider;
+import java.io.File;
+import java.io.FileFilter;
 
-import com.google.inject.throwingproviders.CheckedProvider;
+public class ResourceFileFilter implements FileFilter {
 
-import java.io.IOException;
+    public static final String RESOURCE_FILE_EXTENSION = "j2l";
 
-public interface SearchProvider<T> extends CheckedProvider<T> {
+    @Override
+    public boolean accept(final File file) {
+        if (file.isDirectory())
+            return true;
 
-    T get() throws IOException;
+        String extension = FileUtil.getExtension(file);
+        return StringUtil.equals(extension, RESOURCE_FILE_EXTENSION);
+    }
 }

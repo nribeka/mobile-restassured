@@ -12,27 +12,26 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.provider;
+package com.burkeware.search.api.internal.provider;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.Directory;
 
-public class AnalyzerProvider implements Provider<Analyzer> {
+import java.io.IOException;
 
-    private final Version version;
+public class IndexReaderProvider implements SearchProvider<IndexReader> {
 
-    // TODO: create a factory that takes a hint of what type of analyzer should be returned here
-    // see the example for checked provider
+    private final SearchProvider<Directory> directoryProvider;
+
     @Inject
-    public AnalyzerProvider(final Version version) {
-        this.version = version;
+    protected IndexReaderProvider(final SearchProvider<Directory> directoryProvider) {
+        this.directoryProvider = directoryProvider;
     }
 
     @Override
-    public Analyzer get() {
-        return new StandardAnalyzer(version);
+    public IndexReader get() throws IOException {
+        Directory directory = directoryProvider.get();
+        return IndexReader.open(directory);
     }
 }

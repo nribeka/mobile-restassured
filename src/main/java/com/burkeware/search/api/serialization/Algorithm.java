@@ -16,10 +16,8 @@ package com.burkeware.search.api.serialization;
 
 /**
  * Base interface to serialize and de-serialize String into the correct object representation.
- *
- * @param <T> the object representation
  */
-public interface Algorithm<T> {
+public interface Algorithm {
 
     /**
      * Implementation of this method will define how the object will be serialized from the String representation.
@@ -27,14 +25,13 @@ public interface Algorithm<T> {
      * @param serialized the string representation
      * @return the concrete object
      */
-    T deserialize(final String serialized);
+    Object deserialize(final String serialized);
 
     /**
      * Implementation of this method will define how the object will be de-serialized into the String representation.
      *
-     * @param t the object
+     * @param object the object
      * @return the string representation
      */
-    String serialize(final T t);
-
+    String serialize(final Object object);
 }

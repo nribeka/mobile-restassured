@@ -15,30 +15,35 @@
 package com.burkeware.search.api.util;
 
 import com.burkeware.search.api.exception.ParseException;
-import com.burkeware.search.api.resource.internal.Resource;
-import com.burkeware.search.api.resource.registry.Properties;
+import com.burkeware.search.api.registry.DefaultRegistry;
+import com.burkeware.search.api.registry.Registry;
+import com.burkeware.search.api.resource.ResourceConstants;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 
 public class ResourceUtil {
 
-    public static Properties loadResourceConfig(final File file) throws ParseException, IOException {
+    public static Registry<String, String> readConfiguration(final File file)
+            throws ParseException, IOException {
 
-        java.util.Properties properties = new java.util.Properties();
+        Registry<String, String> registry = new DefaultRegistry<String, String>();
+
+        Properties properties = new Properties();
         properties.load(new FileReader(file));
 
-        for (String mandatoryField : Resource.MANDATORY_FIELDS)
+        for (String mandatoryField : ResourceConstants.MANDATORY_FIELDS) {
             if (!properties.containsKey(mandatoryField))
-                throw new ParseException("Unable to read " + mandatoryField + " (required) property from j2l file.");
+                throw new ParseException("Unable to read '" + mandatoryField + "' property from j2l file.");
+        }
 
-        Properties resourceProperties = new Properties();
         for (Object objectKey : properties.keySet()) {
             String propertyName = (String) objectKey;
-            resourceProperties.putEntry(propertyName, properties.getProperty(propertyName));
+            registry.putEntry(propertyName, properties.getProperty(propertyName));
         }
-        return resourceProperties;
+        return registry;
     }
 
 }

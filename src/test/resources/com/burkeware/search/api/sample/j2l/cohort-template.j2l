@@ -1,0 +1,13 @@
+# Resource configuration
+resourceName=Cohort Resource
+rootNode=$.results
+resourceClass=com.burkeware.search.api.sample.Patient
+algorithm.class=com.burkeware.search.api.sample.PatientCohortAlgorithm
+uriFigureOuter.class=com.burkeware.search.api.sample.PatientUriFigureOuter
+# Mapping
+uuid=$.patient.uuid
+identifier=$.patient.identifiers[0].display
+name=$.patient.person.display
+age=$.patient.person.age
+gender=$.patient.person.gender
+birthdate=$.patient.person.birthdate

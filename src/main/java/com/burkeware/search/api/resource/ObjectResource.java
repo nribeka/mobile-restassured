@@ -14,34 +14,34 @@
 
 package com.burkeware.search.api.resource;
 
-import com.burkeware.search.api.resource.internal.Resource;
+import com.burkeware.search.api.resolver.Resolver;
 import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.uri.FigureOuter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectResource<T> implements Resource<T> {
+public class ObjectResource implements Resource {
 
     private final String name;
 
     private final String rootNode;
 
-    private final Class<T> objectClass;
+    private final Class objectClass;
 
-    private final Algorithm<T> algorithm;
+    private final Algorithm algorithm;
 
-    private final FigureOuter figureOuter;
+    private final Resolver resolver;
 
     private List<SearchableField> searchableFields;
 
-    public ObjectResource(final String name, final String rootNode, final Class<T> objectClass,
-                          final Algorithm<T> algorithm, final FigureOuter figureOuter) {
+    public ObjectResource(final String name, final String rootNode, final Class objectClass,
+                          final Algorithm algorithm, final Resolver resolver) {
         this.name = name;
         this.rootNode = rootNode;
         this.objectClass = objectClass;
         this.algorithm = algorithm;
-        this.figureOuter = figureOuter;
+        this.resolver = resolver;
+        this.searchableFields = new ArrayList<SearchableField>();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class ObjectResource<T> implements Resource<T> {
      * @return the class for which this resource applicable to.
      */
     @Override
-    public Class<T> getResourceClass() {
+    public Class getResourceObject() {
         return this.objectClass;
     }
 
@@ -152,30 +152,30 @@ public class ObjectResource<T> implements Resource<T> {
      *
      * @return the serialization algorithm class for this resource implementation
      */
-    @Override
-    public Algorithm<T> getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return this.algorithm;
     }
 
     /**
      * Get class which will resolve the REST resource URI for this particular resource.
      *
-     * @return the resource's FigureOuter
+     * @return the resource's Resolver
      */
-    @Override
-    public FigureOuter getFigureOuter() {
-        return this.figureOuter;
+    public Resolver getResolver() {
+        return this.resolver;
     }
 
     /**
      * Add a new searchable field for the current resource object. Searchable field is a field on which a client can
-     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache.org/">Lucene</a>
+     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache
+     * .org/">Lucene</a>
      * query.
      *
      * @param name       the name of the field
      * @param expression the JsonPath expression to retrieve the value for the field
      * @param unique     flag whether this field can uniquely identify an object for this resource
-     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query Syntax</a>
+     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
+     * Syntax</a>
      * @see <a href="http://goessner.net/articles/JsonPath/">JsonPath Operators</a>
      */
     @Override
@@ -185,11 +185,13 @@ public class ObjectResource<T> implements Resource<T> {
 
     /**
      * Get all searchable fields configuration for this resource. Searchable field are a field on which a client can
-     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache.org/">Lucene</a>
+     * do filter and search. The search / query string will in the form of <a href="https://lucene.apache
+     * .org/">Lucene</a>
      * query.
      *
      * @return the list of all searchable fields for this resource
-     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query Syntax</a>
+     * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
+     * Syntax</a>
      */
     @Override
     public List<SearchableField> getSearchableFields() {
@@ -199,15 +201,16 @@ public class ObjectResource<T> implements Resource<T> {
     }
 
     /**
-     * Perform serialization for the object and returning the String representation of the object. Default implementation
+     * Perform serialization for the object and returning the String representation of the object. Default
+     * implementation
      * of this should delegate the serialization to the <code>Algorithm</code> object.
      *
-     * @param t the object
+     * @param object the object
      * @return String representation of the object
      */
     @Override
-    public String serialize(final T t) {
-        return getAlgorithm().serialize(t);
+    public String serialize(final Object object) {
+        return getAlgorithm().serialize(object);
     }
 
     /**
@@ -218,19 +221,19 @@ public class ObjectResource<T> implements Resource<T> {
      * @return the concrete object based on the String input
      */
     @Override
-    public T deserialize(final String string) {
+    public Object deserialize(final String string) {
         return getAlgorithm().deserialize(string);
     }
 
     /**
      * Get the URI for the resource where the api can retrieve data. Default implementation should delegate this call to
-     * the <code>FigureOuter</code> class.
+     * the <code>Resolver</code> class.
      *
      * @param searchString the search term for the REST URI
      * @return the full REST URI with the search string
      */
     @Override
     public String getUri(final String searchString) {
-        return getFigureOuter().figureOutUri(searchString);
+        return getResolver().resolve(searchString);
     }
 }

@@ -15,7 +15,7 @@
 package com.burkeware.search.api.dao.impl;
 
 import com.burkeware.search.api.dao.SearchDao;
-import com.burkeware.search.api.provider.SearchProvider;
+import com.burkeware.search.api.internal.provider.SearchProvider;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.lucene.analysis.Analyzer;
