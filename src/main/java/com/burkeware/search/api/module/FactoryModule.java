@@ -44,8 +44,8 @@ public class FactoryModule extends AbstractModule {
         bind(new TypeLiteral<Registry<String, Resource>>() {})
                 .toInstance(new DefaultRegistry<String, Resource>());
 
-        bind(new TypeLiteral<Registry<String, Registry<String, String>>>() {})
-                .toInstance(new DefaultRegistry<String, Registry<String, String>>());
+        bind(new TypeLiteral<Registry<String, String>>() {})
+                .toInstance(new DefaultRegistry<String, String>());
 
         bind(new TypeLiteral<Registry<String, Class>>() {})
                 .toInstance(new DefaultRegistry<String, Class>());

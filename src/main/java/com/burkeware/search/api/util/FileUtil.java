@@ -42,27 +42,33 @@ public class FileUtil {
         return extension;
     }
 
-    public static String getSHA1Checksum(String filename) throws Exception {
-        return getHexString(createChecksum(filename));
+    public static String getSHA1Checksum(final String filename) throws NoSuchAlgorithmException, IOException {
+        return getSHA1Checksum(new File(filename));
     }
 
-    private static byte[] createChecksum(String filename) throws IOException, NoSuchAlgorithmException {
-        InputStream fis = new FileInputStream(filename);
+    public static String getSHA1Checksum(final File file) throws NoSuchAlgorithmException, IOException {
+        return getHexString(createChecksum(file));
+    }
 
-        byte[] buffer = new byte[1024];
+    private static byte[] createChecksum(final File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest complete = MessageDigest.getInstance("SHA1");
-        int numRead;
-        do {
-            numRead = fis.read(buffer);
-            if (numRead > 0) {
+
+        InputStream fis = null;
+        try {
+            int numRead;
+            byte[] buffer = new byte[1024];
+            fis = new FileInputStream(file);
+            while ((numRead = fis.read(buffer)) != -1)
                 complete.update(buffer, 0, numRead);
-            }
-        } while (numRead != -1);
-        fis.close();
+        } finally {
+            if (fis != null)
+                fis.close();
+        }
+
         return complete.digest();
     }
 
-    private static String getHexString(byte[] raw) throws UnsupportedEncodingException {
+    private static String getHexString(final byte[] raw) throws UnsupportedEncodingException {
         byte[] hex = new byte[2 * raw.length];
         int index = 0;
 

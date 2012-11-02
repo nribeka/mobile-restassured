@@ -15,6 +15,7 @@ package com.burkeware.search.api;
 
 import com.burkeware.search.api.exception.ParseException;
 import com.burkeware.search.api.internal.factory.Factory;
+import com.burkeware.search.api.internal.file.ResourceFileFilter;
 import com.burkeware.search.api.logger.Logger;
 import com.burkeware.search.api.registry.Registry;
 import com.burkeware.search.api.resolver.Resolver;
@@ -22,7 +23,6 @@ import com.burkeware.search.api.resource.ObjectResource;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.ResourceConstants;
 import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.util.ResourceFileFilter;
 import com.burkeware.search.api.util.ResourceUtil;
 import com.burkeware.search.api.util.StringUtil;
 import com.google.inject.Inject;
@@ -50,7 +50,7 @@ public class Context {
     private Registry<String, Resource> resourceRegistry;
 
     @Inject
-    private Registry<String, Registry<String, String>> propertiesRegistry;
+    private Registry<String, String> digestRegistry;
 
     @Inject
     private Factory<Resolver> resolverFactory;
@@ -97,6 +97,9 @@ public class Context {
      * @throws IOException    when the parser fail to read the configuration file
      */
     private Resource createResource(final File file) throws ParseException, IOException {
+
+        // TODO: see this gist to prevent re-reading the same resource file if it's already registered
+        // https://gist.github.com/3998818
 
         Registry<String, String> properties = ResourceUtil.readConfiguration(file);
         String resourceName = properties.getEntryValue(ResourceConstants.RESOURCE_NAME);

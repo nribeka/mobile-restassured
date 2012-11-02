@@ -25,7 +25,7 @@ public class StringUtil {
     /**
      * An empty immutable <code>String</code> array.
      */
-    public static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
      * The empty String <code>""</code>.

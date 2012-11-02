@@ -11,7 +11,10 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.burkeware.search.api.util;
+package com.burkeware.search.api.internal.file;
+
+import com.burkeware.search.api.util.FileUtil;
+import com.burkeware.search.api.util.StringUtil;
 
 import java.io.File;
 import java.io.FileFilter;
