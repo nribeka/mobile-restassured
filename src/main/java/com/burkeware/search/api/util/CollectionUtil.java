@@ -11,16 +11,19 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.util;
 
-package com.burkeware.search.api.resource;
+import java.util.Collection;
 
-import com.burkeware.search.api.serialization.Algorithm;
+public class CollectionUtil {
 
-public class PatientResource<Patient> extends ObjectResource {
-
-    public PatientResource(final String name, final String rootNode,
-                           final Class<Patient> objectClass,
-                           final Algorithm<Patient> algorithm) {
-        super(name, rootNode, objectClass, algorithm);
+    /**
+     * Method to check if the collection is empty or not.
+     *
+     * @param collection the collection
+     * @return true if the collection is null or the collection is empty.
+     */
+    public static Boolean isEmpty(final Collection collection) {
+        return collection == null || collection.isEmpty();
     }
 }

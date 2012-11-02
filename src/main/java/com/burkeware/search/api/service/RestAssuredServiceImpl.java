@@ -15,12 +15,24 @@
 package com.burkeware.search.api.service;
 
 import com.burkeware.search.api.RestAssuredService;
+import com.burkeware.search.api.internal.lucene.Indexer;
 import com.burkeware.search.api.resource.Resource;
+import com.google.inject.Inject;
+import org.apache.lucene.queryParser.ParseException;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class RestAssuredServiceImpl implements RestAssuredService {
+
+    private final Indexer indexer;
+
+    @Inject
+    public RestAssuredServiceImpl(final Indexer indexer) {
+        this.indexer = indexer;
+    }
 
     /**
      * Load object described using the <code>resource</code> into local lucene repository. This method will use the URI
@@ -38,7 +50,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @param resource     the resource object which will describe how to index the json resource to lucene.
      */
     @Override
-    public void loadObjects(final String searchString, final Resource resource) {
+    public void loadObjects(final String searchString, final Resource resource) throws ParseException, IOException {
     }
 
     /**
@@ -52,8 +64,24 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @see com.burkeware.search.api.RestAssuredService#loadObjects(String, com.burkeware.search.api.resource.Resource)
      */
     @Override
-    public void loadObjects(final String searchString, final Resource resource, final File file) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void loadObjects(final String searchString, final Resource resource, final File file)
+            throws ParseException, IOException {
+        if (!file.isDirectory()) {
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(file);
+                indexer.updateIndex(resource, stream);
+            } finally {
+                if (stream != null)
+                    stream.close();
+            }
+        } else {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File jsonFile : files)
+                    loadObjects(searchString, resource, jsonFile);
+            }
+        }
     }
 
     /**
@@ -71,7 +99,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return object with matching key and clazz or null
      */
     @Override
-    public <T> T getObject(final String key, final Class<T> clazz) {
+    public <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -89,8 +117,8 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return object with matching key and clazz or null
      */
     @Override
-    public <T> T getObject(final String key, final Resource resource) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public <T> T getObject(final String key, final Resource resource) throws ParseException, IOException {
+        return indexer.getObject(key, resource);
     }
 
     /**
@@ -103,7 +131,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
     @Override
-    public <T> List<T> getObjects(final String searchString, final Class<T> clazz) {
+    public <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -122,7 +150,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return removed object or null if no object was removed.
      */
     @Override
-    public <T> T invalidate(final T object, final Resource resource) {
+    public <T> T invalidate(final T object, final Resource resource) throws ParseException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -138,7 +166,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return the object that was created
      */
     @Override
-    public <T> T createObject(final T object, final Resource resource) {
+    public <T> T createObject(final T object, final Resource resource) throws ParseException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -155,7 +183,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return the object that was updated
      */
     @Override
-    public <T> T updateObject(final T object, final Resource resource) {
+    public <T> T updateObject(final T object, final Resource resource) throws ParseException, IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

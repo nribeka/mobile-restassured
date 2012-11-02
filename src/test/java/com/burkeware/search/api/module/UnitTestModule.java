@@ -11,13 +11,19 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.module;
 
-package com.burkeware.search.api.service;
+import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+public class UnitTestModule extends AbstractModule {
 
-public class IndexServiceTest {
-
-    private static final Log log = LogFactory.getLog(IndexServiceTest.class);
+    /**
+     * Configures a {@link com.google.inject.Binder} via the exposed methods.
+     */
+    @Override
+    protected void configure() {
+        bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("/tmp/lucene");
+        bind(String.class).annotatedWith(Names.named("configuration.lucene.document.key")).toInstance("uuid");
+    }
 }

@@ -152,6 +152,7 @@ public class ObjectResource implements Resource {
      *
      * @return the serialization algorithm class for this resource implementation
      */
+    @Override
     public Algorithm getAlgorithm() {
         return this.algorithm;
     }
@@ -161,6 +162,7 @@ public class ObjectResource implements Resource {
      *
      * @return the resource's Resolver
      */
+    @Override
     public Resolver getResolver() {
         return this.resolver;
     }
@@ -175,7 +177,7 @@ public class ObjectResource implements Resource {
      * @param expression the JsonPath expression to retrieve the value for the field
      * @param unique     flag whether this field can uniquely identify an object for this resource
      * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
-     * Syntax</a>
+     *      Syntax</a>
      * @see <a href="http://goessner.net/articles/JsonPath/">JsonPath Operators</a>
      */
     @Override
@@ -191,7 +193,7 @@ public class ObjectResource implements Resource {
      *
      * @return the list of all searchable fields for this resource
      * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
-     * Syntax</a>
+     *      Syntax</a>
      */
     @Override
     public List<SearchableField> getSearchableFields() {

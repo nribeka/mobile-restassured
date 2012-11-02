@@ -12,12 +12,20 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.service;
+package com.burkeware.search.api.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.File;
 
-public class SearchServiceTest {
+public class FilenameUtil {
 
-    private static final Log log = LogFactory.getLog(SearchServiceTest.class);
+    public static String getExtension(final File file) {
+        String extension = null;
+        String fileName = file.getName();
+        int i = fileName.lastIndexOf('.');
+
+        if (i > 0 && i < fileName.length() - 1) {
+            extension = fileName.substring(i + 1).toLowerCase();
+        }
+        return extension;
+    }
 }

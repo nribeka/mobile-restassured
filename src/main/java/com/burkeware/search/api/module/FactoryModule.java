@@ -31,6 +31,8 @@ public class FactoryModule extends AbstractModule {
 
     /**
      * Configures a {@link com.google.inject.Binder} via the exposed methods.
+     *
+     * @should bind instances of factory and string
      */
     @Override
     protected void configure() {

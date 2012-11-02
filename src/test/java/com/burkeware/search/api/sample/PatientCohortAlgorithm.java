@@ -17,7 +17,7 @@ package com.burkeware.search.api.sample;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.jayway.jsonpath.JsonPath;
 
-public class PatientCohortAlgorithm implements Algorithm<Patient> {
+public class PatientCohortAlgorithm implements Algorithm {
 
     /**
      * Implementation of this method will define how the patient will be serialized from the JSON representation.
@@ -53,11 +53,12 @@ public class PatientCohortAlgorithm implements Algorithm<Patient> {
     /**
      * Implementation of this method will define how the patient will be deserialized into the JSON representation.
      *
-     * @param patient the patient
+     * @param object the patient
      * @return the json representation
      */
     @Override
-    public String serialize(final Patient patient) {
+    public String serialize(final Object object) {
+        Patient patient = (Patient) object;
         return patient.getJson();
     }
 }

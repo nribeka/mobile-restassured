@@ -15,8 +15,10 @@
 package com.burkeware.search.api;
 
 import com.burkeware.search.api.resource.Resource;
+import org.apache.lucene.queryParser.ParseException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface RestAssuredService {
@@ -36,7 +38,7 @@ public interface RestAssuredService {
      * @param searchString the string to filter object that from the REST resource.
      * @param resource     the resource object which will describe how to index the json resource to lucene.
      */
-    void loadObjects(final String searchString, final Resource resource);
+    void loadObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 
     /**
      * Load object described using the <code>resource</code> into local lucene repository. This method will load locally
@@ -48,7 +50,8 @@ public interface RestAssuredService {
      * @param file         the file in the filesystem where the json resource is saved.
      * @see com.burkeware.search.api.RestAssuredService#loadObjects(String, com.burkeware.search.api.resource.Resource)
      */
-    void loadObjects(final String searchString, final Resource resource, final File file);
+    void loadObjects(final String searchString, final Resource resource, final File file)
+            throws ParseException, IOException;
 
     /**
      * Search for an object with matching <code>key</code> and <code>clazz</code> type from the local repository. This
@@ -64,7 +67,7 @@ public interface RestAssuredService {
      * @param <T>   generic type of the object
      * @return object with matching key and clazz or null
      */
-    <T> T getObject(final String key, final Class<T> clazz);
+    <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
     /**
      * Search for an object with matching <code>key</code> and <code>clazz</code> type from the local repository. This
@@ -79,7 +82,7 @@ public interface RestAssuredService {
      * @param <T>      generic type of the object
      * @return object with matching key and clazz or null
      */
-    <T> T getObject(final String key, final Resource resource);
+    <T> Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
     /**
      * Search for objects with matching <code>searchString</code> and <code>clazz</code> type from the local repository.
@@ -90,7 +93,7 @@ public interface RestAssuredService {
      * @param <T>          generic type of the object
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
-    <T> List<T> getObjects(final String searchString, final Class<T> clazz);
+    <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException;
 
     /**
      * Remove an object based on the resource from the local repository. The method will determine if there's unique
@@ -106,7 +109,7 @@ public interface RestAssuredService {
      * @param <T>      generic type of the object
      * @return removed object or null if no object was removed.
      */
-    <T> T invalidate(final T object, final Resource resource);
+    <T> T invalidate(final T object, final Resource resource) throws ParseException, IOException;
 
     /**
      * Create an instance of object in the local repository.
@@ -119,7 +122,7 @@ public interface RestAssuredService {
      * @param <T>      generic type of the object
      * @return the object that was created
      */
-    <T> T createObject(final T object, final Resource resource);
+    <T> T createObject(final T object, final Resource resource) throws ParseException, IOException;
 
     /**
      * Update an instance of object in the local repository.
@@ -133,6 +136,6 @@ public interface RestAssuredService {
      * @param <T>      generic type of the object
      * @return the object that was updated
      */
-    <T> T updateObject(final T object, final Resource resource);
+    <T> T updateObject(final T object, final Resource resource) throws ParseException, IOException;
 
 }

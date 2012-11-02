@@ -14,7 +14,6 @@
 package com.burkeware.search.api.util;
 
 import com.burkeware.search.api.Context;
-import com.burkeware.search.api.RestAssuredService;
 import com.burkeware.search.api.module.FactoryModule;
 import com.burkeware.search.api.module.SearchModule;
 import com.google.inject.Guice;
@@ -31,9 +30,5 @@ public class ContextUtil {
         if (injector == null)
             injector = Guice.createInjector(new SearchModule(), new FactoryModule(), Modules.combine(module));
         return injector.getInstance(Context.class);
-    }
-
-    public static RestAssuredService getRestAssuredService() {
-        return injector.getInstance(RestAssuredService.class);
     }
 }

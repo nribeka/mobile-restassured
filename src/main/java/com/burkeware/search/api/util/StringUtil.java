@@ -34,6 +34,55 @@ public class StringUtil {
 
     /**
      * <pre>
+     * StringUtils.isEmpty(null)      = true
+     * StringUtils.isEmpty("")        = true
+     * StringUtils.isEmpty(" ")       = false
+     * StringUtils.isEmpty("bob")     = false
+     * StringUtils.isEmpty("  bob  ") = false
+     * </pre>
+     *
+     * @param str the String to check, may be null
+     * @return <code>true</code> if the String is empty or null
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.isBlank(null)      = true
+     * StringUtils.isBlank("")        = true
+     * StringUtils.isBlank(" ")       = true
+     * StringUtils.isBlank("bob")     = false
+     * StringUtils.isBlank("  bob  ") = false
+     * </pre>
+     *
+     * @param str the String to check, may be null
+     * @return <code>true</code> if the String is null, empty or whitespace
+     */
+    public static boolean isBlank(String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0)
+            return true;
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Quote the string with single quote.
+     *
+     * @param str the string to be quoted
+     * @return quoted string or null if the input is null
+     */
+    public static String quote(String str) {
+        return str != null ? "'" + str + "'" : null;
+    }
+
+    /**
+     * <pre>
      * StringUtils.defaultString(null)  = ""
      * StringUtils.defaultString("")    = ""
      * StringUtils.defaultString("bat") = "bat"

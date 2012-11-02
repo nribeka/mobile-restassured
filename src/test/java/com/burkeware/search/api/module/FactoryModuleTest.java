@@ -11,13 +11,20 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.module;
 
-package com.burkeware.search.api.util;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.junit.Test;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+public class FactoryModuleTest {
 
-public class ResourceUtilTest {
-
-    private static final Log log = LogFactory.getLog(ResourceUtilTest.class);
+    /**
+     * @verifies bind instances of factory and string
+     * @see FactoryModule#configure()
+     */
+    @Test
+    public void configure_shouldBindInstancesOfFactoryAndString() throws Exception {
+        Injector injector = Guice.createInjector(new FactoryModule());
+    }
 }

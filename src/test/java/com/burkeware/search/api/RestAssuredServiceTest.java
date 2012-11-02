@@ -16,17 +16,8 @@ package com.burkeware.search.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
 
 public class RestAssuredServiceTest {
 
     private static final Log log = LogFactory.getLog(RestAssuredServiceTest.class);
-
-    /**
-     * @verifies add any resources inside the file
-     * @see RestAssuredService#addResources(java.io.File)
-     */
-    @Test
-    public void addResources_shouldAddAnyResourcesInsideTheFile() throws Exception {
-    }
 }

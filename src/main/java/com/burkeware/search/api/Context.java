@@ -58,6 +58,9 @@ public class Context {
     @Inject
     private Factory<Algorithm> algorithmFactory;
 
+    @Inject
+    private RestAssuredService restAssuredService;
+
     /**
      * Register a new resource object for future use.
      *
@@ -183,5 +186,9 @@ public class Context {
     public void registerResolver(final Class<? extends Resolver>... resolvers) {
         for (Class<? extends Resolver> resolver : resolvers)
             resolverFactory.registerImplementation(resolver.getName(), resolver);
+    }
+
+    public RestAssuredService getRestAssuredService() {
+        return restAssuredService;
     }
 }

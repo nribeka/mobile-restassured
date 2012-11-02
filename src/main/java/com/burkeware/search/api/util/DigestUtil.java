@@ -11,7 +11,6 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package com.burkeware.search.api.util;
 
 import java.io.File;
@@ -22,7 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class FileUtil {
+public class DigestUtil {
 
     static final byte[] HEX_CHAR_TABLE = {
             (byte) '0', (byte) '1', (byte) '2', (byte) '3',
@@ -31,41 +30,22 @@ public class FileUtil {
             (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f'
     };
 
-    public static String getExtension(final File file) {
-        String extension = null;
-        String fileName = file.getName();
-        int i = fileName.lastIndexOf('.');
-
-        if (i > 0 && i < fileName.length() - 1) {
-            extension = fileName.substring(i + 1).toLowerCase();
-        }
-        return extension;
-    }
-
-    public static String getSHA1Checksum(final String filename) throws NoSuchAlgorithmException, IOException {
-        return getSHA1Checksum(new File(filename));
-    }
-
-    public static String getSHA1Checksum(final File file) throws NoSuchAlgorithmException, IOException {
-        return getHexString(createChecksum(file));
-    }
-
     private static byte[] createChecksum(final File file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest complete = MessageDigest.getInstance("SHA1");
+        MessageDigest digest = MessageDigest.getInstance("SHA1");
 
-        InputStream fis = null;
+        InputStream inputStream = null;
         try {
-            int numRead;
+            int count;
             byte[] buffer = new byte[1024];
-            fis = new FileInputStream(file);
-            while ((numRead = fis.read(buffer)) != -1)
-                complete.update(buffer, 0, numRead);
+            inputStream = new FileInputStream(file);
+            while ((count = inputStream.read(buffer)) != -1)
+                digest.update(buffer, 0, count);
         } finally {
-            if (fis != null)
-                fis.close();
+            if (inputStream != null)
+                inputStream.close();
         }
 
-        return complete.digest();
+        return digest.digest();
     }
 
     private static String getHexString(final byte[] raw) throws UnsupportedEncodingException {
@@ -78,5 +58,13 @@ public class FileUtil {
             hex[index++] = HEX_CHAR_TABLE[v & 0xF];
         }
         return new String(hex, "ASCII");
+    }
+
+    public static String getSHA1Checksum(final String filename) throws NoSuchAlgorithmException, IOException {
+        return getSHA1Checksum(new File(filename));
+    }
+
+    public static String getSHA1Checksum(final File file) throws NoSuchAlgorithmException, IOException {
+        return getHexString(createChecksum(file));
     }
 }

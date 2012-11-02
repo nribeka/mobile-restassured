@@ -13,7 +13,7 @@
  */
 package com.burkeware.search.api.internal.file;
 
-import com.burkeware.search.api.util.FileUtil;
+import com.burkeware.search.api.util.FilenameUtil;
 import com.burkeware.search.api.util.StringUtil;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class ResourceFileFilter implements FileFilter {
         if (file.isDirectory())
             return true;
 
-        String extension = FileUtil.getExtension(file);
+        String extension = FilenameUtil.getExtension(file);
         return StringUtil.equals(extension, RESOURCE_FILE_EXTENSION);
     }
 }

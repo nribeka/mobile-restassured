@@ -14,6 +14,9 @@
 
 package com.burkeware.search.api.resource;
 
+import com.burkeware.search.api.resolver.Resolver;
+import com.burkeware.search.api.serialization.Algorithm;
+
 import java.util.List;
 
 /**
@@ -25,7 +28,7 @@ import java.util.List;
  *
  * @param <T> the object for which the resource is applicable
  */
-public interface Resource<T> {
+public interface Resource {
 
     String getName();
 
@@ -121,6 +124,21 @@ public interface Resource<T> {
     Class getResourceObject();
 
     /**
+     * Get class which will perform the serialization and de-serialization process from String representation to the
+     * correct object representation.
+     *
+     * @return the serialization algorithm class for this resource implementation
+     */
+    Algorithm getAlgorithm();
+
+    /**
+     * Get class which will resolve the REST resource URI for this particular resource.
+     *
+     * @return the resource's Resolver
+     */
+    Resolver getResolver();
+
+    /**
      * Add a new searchable field for the current resource object. Searchable field is a field on which a client can
      * do filter and search. The search / query string will in the form of <a href="https://lucene.apache
      * .org/">Lucene</a>
@@ -130,7 +148,7 @@ public interface Resource<T> {
      * @param expression the JsonPath expression to retrieve the value for the field
      * @param unique     flag whether this field can uniquely identify an object for this resource
      * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
-     * Syntax</a>
+     *      Syntax</a>
      * @see <a href="http://goessner.net/articles/JsonPath/">JsonPath Operators</a>
      */
     void addFieldDefinition(String name, String expression, Boolean unique);
@@ -143,7 +161,7 @@ public interface Resource<T> {
      *
      * @return the list of all searchable fields for this resource
      * @see <a href="https://lucene.apache.org/core/old_versioned_docs/versions/3_0_0/queryparsersyntax.html">Query
-     * Syntax</a>
+     *      Syntax</a>
      */
     List<SearchableField> getSearchableFields();
 
@@ -152,10 +170,10 @@ public interface Resource<T> {
      * implementation
      * of this should delegate the serialization to the <code>Algorithm</code> object.
      *
-     * @param t the object
+     * @param object the object
      * @return String representation of the object
      */
-    String serialize(T t);
+    String serialize(Object object);
 
     /**
      * Perform de-serialization of the object's String representation into the concrete object representation. Default
@@ -164,7 +182,7 @@ public interface Resource<T> {
      * @param string the String representation of the object
      * @return the concrete object based on the String input
      */
-    T deserialize(String string);
+    Object deserialize(String string);
 
     /**
      * Get the URI for the resource where the api can retrieve data. Default implementation should delegate this call to
