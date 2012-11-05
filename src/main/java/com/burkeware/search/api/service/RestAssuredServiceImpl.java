@@ -15,7 +15,9 @@
 package com.burkeware.search.api.service;
 
 import com.burkeware.search.api.RestAssuredService;
+import com.burkeware.search.api.codec.binary.Base64;
 import com.burkeware.search.api.internal.lucene.Indexer;
+import com.burkeware.search.api.resolver.Resolver;
 import com.burkeware.search.api.resource.Resource;
 import com.google.inject.Inject;
 import org.apache.lucene.queryParser.ParseException;
@@ -23,6 +25,8 @@ import org.apache.lucene.queryParser.ParseException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 public class RestAssuredServiceImpl implements RestAssuredService {
@@ -51,6 +55,17 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      */
     @Override
     public void loadObjects(final String searchString, final Resource resource) throws ParseException, IOException {
+
+        Resolver resolver = resource.getResolver();
+
+        String auth = resolver.getUser() + ":" + resolver.getPassword();
+        String basicAuth = "Basic " + new String(new Base64().encode(auth.getBytes()));
+
+        URL url = new URL(resolver.resolve(searchString));
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("Authorization", basicAuth);
+
+        indexer.updateIndex(resource, connection.getInputStream());
     }
 
     /**
@@ -95,12 +110,11 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param key   the key to distinguish the object
      * @param clazz the expected return type of the object
-     * @param <T>   generic type of the object
      * @return object with matching key and clazz or null
      */
     @Override
-    public <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
+        return indexer.getObject(key, clazz);
     }
 
     /**
@@ -113,11 +127,10 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param key      the key to distinguish the object
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return object with matching key and clazz or null
      */
     @Override
-    public <T> T getObject(final String key, final Resource resource) throws ParseException, IOException {
+    public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         return indexer.getObject(key, resource);
     }
 
@@ -127,12 +140,17 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param clazz        the expected return type of the object
      * @param searchString the search string to limit the number of returned object
-     * @param <T>          generic type of the object
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
     @Override
-    public <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException {
+        return indexer.getObjects(searchString, clazz);
+    }
+
+    @Override
+    public List<Object> getObjects(final String searchString, final Resource resource) throws ParseException,
+            IOException {
+        return indexer.getObjects(searchString, resource);
     }
 
     /**
@@ -146,12 +164,11 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param object   the object to be removed if the object exists.
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return removed object or null if no object was removed.
      */
     @Override
-    public <T> T invalidate(final T object, final Resource resource) throws ParseException, IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object invalidate(final Object object, final Resource resource) throws ParseException, IOException {
+        return indexer.deleteObject(object, resource);
     }
 
     /**
@@ -162,12 +179,11 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param object   the object to be created
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return the object that was created
      */
     @Override
-    public <T> T createObject(final T object, final Resource resource) throws ParseException, IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object createObject(final Object object, final Resource resource) throws ParseException, IOException {
+        return indexer.createObject(object, resource);
     }
 
     /**
@@ -179,11 +195,10 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      *
      * @param object   the object to be updated
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return the object that was updated
      */
     @Override
-    public <T> T updateObject(final T object, final Resource resource) throws ParseException, IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Object updateObject(final Object object, final Resource resource) throws ParseException, IOException {
+        return indexer.updateObject(object, resource);
     }
 }

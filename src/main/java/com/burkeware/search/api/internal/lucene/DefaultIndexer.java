@@ -15,6 +15,7 @@ package com.burkeware.search.api.internal.lucene;
 
 import com.burkeware.search.api.internal.provider.IndexSearcherProvider;
 import com.burkeware.search.api.internal.provider.IndexWriterProvider;
+import com.burkeware.search.api.registry.Registry;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.SearchableField;
 import com.burkeware.search.api.serialization.Algorithm;
@@ -30,6 +31,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -40,17 +42,23 @@ import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class DefaultIndexer implements Indexer {
+
+    public static final String DEFAULT_FIELD_UUID = "_uuid";
 
     private final QueryParser parser;
 
     private final IndexWriterProvider writerProvider;
 
     private final IndexSearcherProvider searcherProvider;
+
+    private final Registry<String, Resource> resourceRegistry;
 
     private static final String DEFAULT_FIELD_JSON = "_json";
 
@@ -63,9 +71,11 @@ public class DefaultIndexer implements Indexer {
     @Inject
     public DefaultIndexer(final IndexWriterProvider writerProvider, final IndexSearcherProvider searcherProvider,
                           final @Named("configuration.lucene.document.key") String defaultField,
-                          final Version version, final Analyzer analyzer) {
+                          final Version version, final Analyzer analyzer,
+                          final Registry<String, Resource> resourceRegistry) {
         this.writerProvider = writerProvider;
         this.searcherProvider = searcherProvider;
+        this.resourceRegistry = resourceRegistry;
         this.parser = new QueryParser(version, defaultField, analyzer);
     }
 
@@ -90,7 +100,7 @@ public class DefaultIndexer implements Indexer {
      * @param searchableFields the searchable fields definition
      * @return query string which could be either a unique or full searchable field based query.
      */
-    private String createJsonObjectQuery(final Object jsonObject, final List<SearchableField> searchableFields) {
+    private String createSearchableFieldQuery(final Object jsonObject, final List<SearchableField> searchableFields) {
         boolean uniqueExists = false;
         StringBuilder fullQuery = new StringBuilder();
         StringBuilder uniqueQuery = new StringBuilder();
@@ -120,23 +130,34 @@ public class DefaultIndexer implements Indexer {
     }
 
     /**
-     * Create query for a resource and matching the jsonObject passed to this method. Calling this method will ensure
-     * our query will restrict the returned to object to the correct resource id.
+     * Create query fragment for a certain class. Calling this method will ensure the documents returned will of the
+     * <code>clazz</code> type meaning the documents can be converted into object of type <code>clazz</code>. Converting
+     * the documents need to be performed by getting the correct resource object from the document and then calling the
+     * serialize method or getting the algorithm class and perform the serialization process from the algorithm object.
      * <p/>
-     * Example use case: please retrieve all patients data. This should be performed through query by object type
-     * because the caller is interested only in the type of object, irregardless of the resources from which the objects
-     * are coming from. To limit them by resource, the query should include the resource information (obviously) :)
+     * Example use case: please retrieve all patients data. This should be performed by querying all object of certain
+     * class type  because the caller is interested only in the type of object, irregardless of the resources from
+     * which the objects are coming from.
+     *
+     * @param clazz the clazz for which the query is based on
+     * @return the base query for a resource
+     */
+    private String createClassQuery(final Class clazz) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(createQuery(DEFAULT_FIELD_CLASS, clazz.getName()));
+        return builder.toString();
+    }
+
+    /**
+     * Create query for a certain resource object. Calling this method will ensure the documents returned will be
+     * documents that was indexed using the resource object.
      *
      * @param resource the resource for which the query is based on
      * @return the base query for a resource
      */
-    private String createJsonObjectQuery(final Object jsonObject, final Resource resource) {
+    private String createResourceQuery(final Resource resource) {
         StringBuilder builder = new StringBuilder();
-        builder.append(createQuery(DEFAULT_FIELD_CLASS, resource.getResourceObject().getName()));
-        builder.append(" AND ");
         builder.append(createQuery(DEFAULT_FIELD_RESOURCE, resource.getName()));
-        builder.append(" AND ");
-        builder.append(createJsonObjectQuery(jsonObject, resource.getSearchableFields()));
         return builder.toString();
     }
 
@@ -173,6 +194,8 @@ public class DefaultIndexer implements Indexer {
 
         Document document = new Document();
         document.add(new Field(DEFAULT_FIELD_JSON, jsonObject.toString(), Field.Store.YES, Field.Index.NO));
+        document.add(new Field(DEFAULT_FIELD_UUID, UUID.randomUUID().toString(), Field.Store.YES,
+                Field.Index.NOT_ANALYZED_NO_NORMS));
         document.add(new Field(DEFAULT_FIELD_CLASS, resource.getResourceObject().getName(), Field.Store.YES,
                 Field.Index.NOT_ANALYZED_NO_NORMS));
         document.add(new Field(DEFAULT_FIELD_RESOURCE, resource.getName(), Field.Store.YES,
@@ -186,39 +209,40 @@ public class DefaultIndexer implements Indexer {
         writer.addDocument(document);
     }
 
-    private void updateIndexInternal(final Object jsonObject, final Resource resource,
-                                     final IndexSearcher indexSearcher, final IndexWriter indexWriter)
+    private void deleteObject(final Object jsonObject, final Resource resource,
+                              final IndexSearcher indexSearcher,
+                              final IndexWriter indexWriter)
             throws ParseException, IOException {
-        Query query = parser.parse(createJsonObjectQuery(jsonObject, resource));
+        String queryString = createResourceQuery(resource) + " AND "
+                + createSearchableFieldQuery(jsonObject, resource.getSearchableFields());
+        Query query = parser.parse(queryString);
         List<Document> documents = findDocuments(query, indexSearcher);
-        // only write new object, prevent duplicates
-        if (CollectionUtil.isEmpty(documents))
-            writeObject(jsonObject, resource, indexWriter);
+        if (!CollectionUtil.isEmpty(documents)) {
+            if (documents.size() > 1)
+                throw new IOException(
+                        "Unable to uniquely identify an object using the json object in the repository.");
+            for (Document document : documents) {
+                String uuid = document.get(DEFAULT_FIELD_UUID);
+                Term term = new Term(DEFAULT_FIELD_UUID, uuid);
+                indexWriter.deleteDocuments(term);
+            }
+        }
+    }
+
+    private void updateObject(final Object jsonObject, final Resource resource,
+                              final IndexSearcher indexSearcher, final IndexWriter indexWriter)
+            throws ParseException, IOException {
+        // write the new object
+        writeObject(jsonObject, resource, indexWriter);
+        // search for the same object, if they exists, delete them :)
+        deleteObject(jsonObject, resource, indexSearcher, indexWriter);
     }
 
     @Override
     public void updateIndex(final Resource resource, final InputStream inputStream)
             throws ParseException, IOException {
-        IndexSearcher indexSearcher = null;
-        IndexWriter indexWriter = null;
-        try {
-            indexWriter = writerProvider.get();
-            indexSearcher = searcherProvider.get();
-            String json = IOUtil.readAsString(inputStream);
-            Object jsonObject = JsonPath.read(json, resource.getRootNode());
-            if (jsonObject instanceof JSONArray) {
-                JSONArray array = (JSONArray) jsonObject;
-                for (Object element : array)
-                    updateIndexInternal(element, resource, indexSearcher, indexWriter);
-            } else if (jsonObject instanceof JSONObject) {
-                updateIndexInternal(jsonObject, resource, indexSearcher, indexWriter);
-            }
-        } finally {
-            if (indexWriter != null)
-                indexWriter.close();
-            if (indexSearcher != null)
-                indexSearcher.close();
-        }
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        updateIndex(resource, reader);
     }
 
     @Override
@@ -234,9 +258,9 @@ public class DefaultIndexer implements Indexer {
             if (jsonObject instanceof JSONArray) {
                 JSONArray array = (JSONArray) jsonObject;
                 for (Object element : array)
-                    updateIndexInternal(element, resource, indexSearcher, indexWriter);
+                    updateObject(element, resource, indexSearcher, indexWriter);
             } else if (jsonObject instanceof JSONObject) {
-                updateIndexInternal(jsonObject, resource, indexSearcher, indexWriter);
+                updateObject(jsonObject, resource, indexSearcher, indexWriter);
             }
         } finally {
             if (indexWriter != null)
@@ -246,36 +270,158 @@ public class DefaultIndexer implements Indexer {
         }
     }
 
-    private String createKeyQuery(final String key, final Resource resource) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(createQuery(DEFAULT_FIELD_CLASS, resource.getResourceObject().getName()));
-        builder.append(" AND ");
-        builder.append(createQuery(DEFAULT_FIELD_RESOURCE, resource.getName()));
-        builder.append(" AND ");
-        builder.append(key);
-        return builder.toString();
+    @Override
+    public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
+        Object object = null;
+        IndexSearcher searcher = null;
+        try {
+            searcher = searcherProvider.get();
+            String queryString = createClassQuery(clazz) + " AND " + StringUtil.quote(key);
+            Query query = parser.parse(queryString);
+            List<Document> documents = findDocuments(query, searcher);
+            if (!CollectionUtil.isEmpty(documents)) {
+                if (documents.size() > 1)
+                    throw new IOException(
+                            "Unable to uniquely identify an object using key: '" + key + "'in the repository.");
+                for (Document document : documents) {
+                    String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
+                    Resource resource = resourceRegistry.getEntryValue(resourceName);
+                    Algorithm algorithm = resource.getAlgorithm();
+                    String json = document.get(DEFAULT_FIELD_JSON);
+                    object = algorithm.serialize(json);
+                }
+            }
+        } finally {
+            if (searcher != null)
+                searcher.close();
+        }
+        return object;
     }
 
     @Override
     public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         Object object = null;
-        IndexSearcher indexSearcher = null;
+        IndexSearcher searcher = null;
         try {
-            indexSearcher = searcherProvider.get();
-            Query query = parser.parse(createKeyQuery(key, resource));
-            List<Document> documents = findDocuments(query, indexSearcher);
+            searcher = searcherProvider.get();
+            String queryString = createResourceQuery(resource) + " AND " + StringUtil.quote(key);
+            Query query = parser.parse(queryString);
+            List<Document> documents = findDocuments(query, searcher);
             if (!CollectionUtil.isEmpty(documents)) {
                 if (documents.size() > 1)
-                    throw new IOException("Unable to uniquely identify an object in the repository.");
+                    throw new IOException(
+                            "Unable to uniquely identify an object using key: '" + key + "'in the repository.");
 
+                Algorithm algorithm = resource.getAlgorithm();
                 for (Document document : documents) {
-                    String json = document.get("_json");
-                    Algorithm algorithm = resource.getAlgorithm();
+                    String json = document.get(DEFAULT_FIELD_JSON);
                     object = algorithm.serialize(json);
                 }
-
             }
         } finally {
+            if (searcher != null)
+                searcher.close();
+        }
+        return object;
+    }
+
+    @Override
+    public List<Object> getObjects(final String searchString, final Class clazz)
+            throws ParseException, IOException {
+        List<Object> objects = new ArrayList<Object>();
+        IndexSearcher searcher = null;
+        try {
+            searcher = searcherProvider.get();
+            String queryString = createClassQuery(clazz) + " AND " + searchString;
+            Query query = parser.parse(queryString);
+            List<Document> documents = findDocuments(query, searcher);
+            if (!CollectionUtil.isEmpty(documents)) {
+                for (Document document : documents) {
+                    String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
+                    Resource resource = resourceRegistry.getEntryValue(resourceName);
+                    Algorithm algorithm = resource.getAlgorithm();
+                    String json = document.get(DEFAULT_FIELD_JSON);
+                    objects.add(algorithm.serialize(json));
+                }
+            }
+        } finally {
+            if (searcher != null)
+                searcher.close();
+        }
+        return objects;
+    }
+
+    @Override
+    public List<Object> getObjects(final String searchString, final Resource resource)
+            throws ParseException, IOException {
+        List<Object> objects = new ArrayList<Object>();
+        IndexSearcher searcher = null;
+        try {
+            searcher = searcherProvider.get();
+            String queryString = createResourceQuery(resource) + " AND " + searchString;
+            Query query = parser.parse(queryString);
+            List<Document> documents = findDocuments(query, searcher);
+            if (!CollectionUtil.isEmpty(documents)) {
+                Algorithm algorithm = resource.getAlgorithm();
+                for (Document document : documents) {
+                    String json = document.get(DEFAULT_FIELD_JSON);
+                    objects.add(algorithm.serialize(json));
+                }
+            }
+        } finally {
+            if (searcher != null)
+                searcher.close();
+        }
+        return objects;
+    }
+
+    @Override
+    public Object createObject(final Object object, final Resource resource) throws ParseException, IOException {
+        IndexWriter indexWriter = null;
+        try {
+            indexWriter = writerProvider.get();
+            String jsonString = resource.serialize(object);
+            Object jsonObject = JsonPath.read(jsonString, "$");
+            writeObject(jsonObject, resource, indexWriter);
+        } finally {
+            if (indexWriter != null)
+                indexWriter.close();
+        }
+        return object;
+    }
+
+    @Override
+    public Object deleteObject(final Object object, final Resource resource) throws ParseException, IOException {
+        IndexWriter indexWriter = null;
+        IndexSearcher indexSearcher = null;
+        try {
+            indexWriter = writerProvider.get();
+            indexSearcher = searcherProvider.get();
+            String jsonString = resource.serialize(object);
+            Object jsonObject = JsonPath.read(jsonString, "$");
+            deleteObject(jsonObject, resource, indexSearcher, indexWriter);
+        } finally {
+            if (indexWriter != null)
+                indexWriter.close();
+            if (indexSearcher != null)
+                indexSearcher.close();
+        }
+        return object;
+    }
+
+    @Override
+    public Object updateObject(final Object object, final Resource resource) throws ParseException, IOException {
+        IndexWriter indexWriter = null;
+        IndexSearcher indexSearcher = null;
+        try {
+            indexWriter = writerProvider.get();
+            indexSearcher = searcherProvider.get();
+            String jsonString = resource.serialize(object);
+            Object jsonObject = JsonPath.read(jsonString, "$");
+            updateObject(jsonObject, resource, indexSearcher, indexWriter);
+        } finally {
+            if (indexWriter != null)
+                indexWriter.close();
             if (indexSearcher != null)
                 indexSearcher.close();
         }

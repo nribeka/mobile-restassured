@@ -23,4 +23,8 @@ public interface Resolver {
      * @return full URI to the REST resource
      */
     String resolve(final String searchString);
+
+    String getUser();
+
+    String getPassword();
 }

@@ -19,6 +19,7 @@ import org.apache.lucene.queryParser.ParseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.List;
 
 public interface Indexer {
 
@@ -26,5 +27,17 @@ public interface Indexer {
 
     void updateIndex(final Resource resource, final Reader reader) throws ParseException, IOException;
 
-    <T> T getObject(final String key, final Resource resource) throws ParseException, IOException;
+    Object getObject(final String key, final Class clazz) throws ParseException, IOException;
+
+    Object getObject(final String key, final Resource resource) throws ParseException, IOException;
+
+    List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException;
+
+    List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
+
+    Object createObject(final Object object, final Resource resource) throws ParseException, IOException;
+
+    Object deleteObject(final Object object, final Resource resource) throws ParseException, IOException;
+
+    Object updateObject(final Object object, final Resource resource) throws ParseException, IOException;
 }

@@ -64,10 +64,9 @@ public interface RestAssuredService {
      *
      * @param key   the key to distinguish the object
      * @param clazz the expected return type of the object
-     * @param <T>   generic type of the object
      * @return object with matching key and clazz or null
      */
-    <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
+    Object getObject(final String key, final Class clazz) throws ParseException, IOException;
 
     /**
      * Search for an object with matching <code>key</code> and <code>clazz</code> type from the local repository. This
@@ -79,10 +78,9 @@ public interface RestAssuredService {
      *
      * @param key      the key to distinguish the object
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return object with matching key and clazz or null
      */
-    <T> Object getObject(final String key, final Resource resource) throws ParseException, IOException;
+    Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
     /**
      * Search for objects with matching <code>searchString</code> and <code>clazz</code> type from the local repository.
@@ -90,10 +88,11 @@ public interface RestAssuredService {
      *
      * @param clazz        the expected return type of the object
      * @param searchString the search string to limit the number of returned object
-     * @param <T>          generic type of the object
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
-    <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException;
+    List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException;
+
+    List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 
     /**
      * Remove an object based on the resource from the local repository. The method will determine if there's unique
@@ -106,10 +105,9 @@ public interface RestAssuredService {
      *
      * @param object   the object to be removed if the object exists.
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return removed object or null if no object was removed.
      */
-    <T> T invalidate(final T object, final Resource resource) throws ParseException, IOException;
+    Object invalidate(final Object object, final Resource resource) throws ParseException, IOException;
 
     /**
      * Create an instance of object in the local repository.
@@ -119,10 +117,9 @@ public interface RestAssuredService {
      *
      * @param object   the object to be created
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return the object that was created
      */
-    <T> T createObject(final T object, final Resource resource) throws ParseException, IOException;
+    Object createObject(final Object object, final Resource resource) throws ParseException, IOException;
 
     /**
      * Update an instance of object in the local repository.
@@ -133,9 +130,8 @@ public interface RestAssuredService {
      *
      * @param object   the object to be updated
      * @param resource the resource object which will describe how to index the json resource to lucene.
-     * @param <T>      generic type of the object
      * @return the object that was updated
      */
-    <T> T updateObject(final T object, final Resource resource) throws ParseException, IOException;
+    Object updateObject(final Object object, final Resource resource) throws ParseException, IOException;
 
 }

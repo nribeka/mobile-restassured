@@ -13,8 +13,14 @@
  */
 package com.burkeware.search.api.module;
 
+import com.burkeware.search.api.internal.provider.SearchProvider;
+import com.burkeware.search.api.registry.Registry;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import junit.framework.Assert;
+import org.apache.lucene.index.IndexWriter;
 import org.junit.Test;
 
 public class FactoryModuleTest {
@@ -25,6 +31,14 @@ public class FactoryModuleTest {
      */
     @Test
     public void configure_shouldBindInstancesOfFactoryAndString() throws Exception {
-        Injector injector = Guice.createInjector(new FactoryModule());
+        Injector injector = Guice.createInjector(new FactoryModule(), new SearchModule());
+
+        Registry<String, String> realRegistry = injector.getInstance(
+                Key.get(new TypeLiteral<Registry<String, String>>() {}));
+        Assert.assertNotNull(realRegistry);
+
+        SearchProvider<IndexWriter> writerProvider = injector.getInstance(
+                Key.get(new TypeLiteral<SearchProvider<IndexWriter>>() {}));
+        Assert.assertNotNull(writerProvider);
     }
 }
