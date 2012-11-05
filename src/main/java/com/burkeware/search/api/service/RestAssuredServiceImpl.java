@@ -15,11 +15,11 @@
 package com.burkeware.search.api.service;
 
 import com.burkeware.search.api.RestAssuredService;
-import com.burkeware.search.api.codec.binary.Base64;
 import com.burkeware.search.api.internal.lucene.Indexer;
 import com.burkeware.search.api.resolver.Resolver;
 import com.burkeware.search.api.resource.Resource;
 import com.google.inject.Inject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.lucene.queryParser.ParseException;
 
 import java.io.File;
