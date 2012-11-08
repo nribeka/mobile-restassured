@@ -35,6 +35,14 @@ public interface Registry<K, V> {
     void putEntry(K key, V value);
 
     /**
+     * Generic method to remove an entry from the registry
+     *
+     * @param key the key to the element in the registry
+     * @return the value to be removed
+     */
+    V removeEntry(K key);
+
+    /**
      * @param key the key to value we would like to return
      * @return the registry's value
      */

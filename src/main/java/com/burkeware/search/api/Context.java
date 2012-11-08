@@ -16,7 +16,6 @@ package com.burkeware.search.api;
 import com.burkeware.search.api.exception.ParseException;
 import com.burkeware.search.api.internal.factory.Factory;
 import com.burkeware.search.api.internal.file.ResourceFileFilter;
-import com.burkeware.search.api.logger.Logger;
 import com.burkeware.search.api.registry.Registry;
 import com.burkeware.search.api.resolver.Resolver;
 import com.burkeware.search.api.resource.ObjectResource;
@@ -41,9 +40,6 @@ import java.util.Map;
 public class Context {
 
     @Inject
-    private Logger logger;
-
-    @Inject
     private Registry<String, Class> classRegistry;
 
     @Inject
@@ -58,16 +54,15 @@ public class Context {
     @Inject
     private Factory<Algorithm> algorithmFactory;
 
-    @Inject
-    private RestAssuredService restAssuredService;
-
     /**
      * Register a new resource object for future use.
      *
      * @param resource the resource to be registered.
+     * @should register programmatically created resource object.
+     * @should not register resource without resource name.
      */
     public void registerResource(final Resource resource) {
-        if (resource != null)
+        if (resource != null && resource.getName() != null)
             resourceRegistry.putEntry(resource.getName(), resource);
     }
 
@@ -75,8 +70,11 @@ public class Context {
      * Read the input file and then convert each file into resource object and register them.
      *
      * @param file the file (could be a directory too).
-     * @throws ParseException when the parser fail to parse the configuration file
-     * @throws IOException    when the parser fail to read the configuration file
+     * @throws ParseException when the parser fail to parse the configuration file.
+     * @throws IOException    when the parser fail to read the configuration file.
+     * @shoud recursively register all resources inside directory.
+     * @should only register resource files with j2l extension.
+     * @should create valid resource object based on the resource file.
      */
     public void registerResources(final File file) throws ParseException, IOException {
         FileFilter fileFilter = new ResourceFileFilter();
@@ -109,13 +107,13 @@ public class Context {
 
         String rootNode = properties.getEntryValue(ResourceConstants.RESOURCE_ROOT_NODE);
 
-        String objectClassKey = properties.getEntryValue(ResourceConstants.RESOURCE_CLASS);
+        String objectClassKey = properties.getEntryValue(ResourceConstants.RESOURCE_OBJECT);
         Class objectClass = classRegistry.getEntryValue(objectClassKey);
 
         String algorithmKey = properties.getEntryValue(ResourceConstants.RESOURCE_ALGORITHM_CLASS);
         Algorithm algorithm = algorithmFactory.createImplementation(algorithmKey);
 
-        String resolverKey = properties.getEntryValue(ResourceConstants.RESOURCE_URI_CLASS);
+        String resolverKey = properties.getEntryValue(ResourceConstants.RESOURCE_URI_RESOLVER_CLASS);
         Resolver resolver = resolverFactory.createImplementation(resolverKey);
 
         Resource resource = new ObjectResource(resourceName, rootNode, objectClass, algorithm, resolver);
@@ -143,9 +141,10 @@ public class Context {
      * Get all registered resources from the resource registry.
      *
      * @return all registered resources.
+     * @should return all registered resource object.
      */
     public Collection<Resource> getResources() {
-        return this.resourceRegistry.getEntries().values();
+        return resourceRegistry.getEntries().values();
     }
 
     /**
@@ -153,42 +152,58 @@ public class Context {
      *
      * @param name the name of the resource
      * @return the matching resource object or null if no resource match have the matching name.
+     * @should return resource object based on the name of the resource.
      */
     public Resource getResource(final String name) {
-        return this.resourceRegistry.getEntryValue(name);
+        return resourceRegistry.getEntryValue(name);
+    }
+
+    public Resource removeResource(final Resource resource) {
+        return resourceRegistry.removeEntry(resource.getName());
     }
 
     /**
      * Register all domain object classes.
      *
-     * @param classes the domain object classes
+     * @param classes the domain object classes.
+     * @should register all domain object classes in the domain object registry.
      */
     public void registerObject(final Class<?>... classes) {
         for (Class<?> clazz : classes)
             classRegistry.putEntry(clazz.getName(), clazz);
     }
 
+    public Class<?> removeObject(final Class<?> clazz) {
+        return classRegistry.removeEntry(clazz.getName());
+    }
+
     /**
      * Register all algorithm classes.
      *
-     * @param algorithms the algorithm classes
+     * @param algorithms the algorithm classes.
+     * @should register all algorithm classes in the algorithm registry.
      */
     public void registerAlgorithm(final Class<? extends Algorithm>... algorithms) {
         for (Class<? extends Algorithm> algorithm : algorithms)
             algorithmFactory.registerImplementation(algorithm.getName(), algorithm);
     }
 
+    public Class<? extends Algorithm> removeAlgorithm(final Class<? extends Algorithm> algorithm) {
+        return algorithmFactory.getMapping(algorithm.getName());
+    }
+
     /**
      * Register all resolver classes
      *
      * @param resolvers the resolver classes
+     * @should register all resolver classes in the resolve registry.
      */
     public void registerResolver(final Class<? extends Resolver>... resolvers) {
         for (Class<? extends Resolver> resolver : resolvers)
             resolverFactory.registerImplementation(resolver.getName(), resolver);
     }
 
-    public RestAssuredService getRestAssuredService() {
-        return restAssuredService;
+    public Class<? extends Resolver> removeResolver(final Class<? extends Resolver> resolver) {
+        return resolverFactory.getMapping(resolver.getName());
     }
 }

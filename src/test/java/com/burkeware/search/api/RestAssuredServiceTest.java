@@ -14,10 +14,43 @@
 
 package com.burkeware.search.api;
 
+import com.burkeware.search.api.module.UnitTestModule;
+import com.burkeware.search.api.resource.Resource;
+import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
+import com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm;
+import com.burkeware.search.api.sample.domain.Patient;
+import com.burkeware.search.api.sample.resolver.PatientCohortResolver;
+import com.burkeware.search.api.sample.resolver.PatientResolver;
+import com.burkeware.search.api.util.ContextUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.File;
+import java.net.URL;
 
 public class RestAssuredServiceTest {
 
     private static final Log log = LogFactory.getLog(RestAssuredServiceTest.class);
+
+    /**
+     * @verifies index data from the rest resource
+     * @see RestAssuredService#loadObjects(String, com.burkeware.search.api.resource.Resource)
+     */
+    @Test
+    public void loadObjects_shouldIndexDataFromTheRestResource() throws Exception {
+        URL url = RestAssuredService.class.getResource("sample/j2l");
+
+        Context context = ContextUtil.createContext(new UnitTestModule());
+        context.registerAlgorithm(PatientAlgorithm.class, PatientCohortAlgorithm.class);
+        context.registerResolver(PatientResolver.class, PatientCohortResolver.class);
+        context.registerObject(Patient.class);
+        context.registerResources(new File(url.getPath()));
+
+        Resource resource = context.getResource("Patient");
+        Assert.assertNotNull(resource);
+
+        log.info(context);
+    }
 }

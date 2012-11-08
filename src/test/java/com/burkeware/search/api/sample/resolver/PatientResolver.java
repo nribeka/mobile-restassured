@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.sample;
+package com.burkeware.search.api.sample.resolver;
 
 import com.burkeware.search.api.resolver.Resolver;
 
@@ -27,5 +27,15 @@ public class PatientResolver implements Resolver {
     @Override
     public String resolve(final String searchString) {
         return "http://localhost:8080/openmrs/ws/rest/v1/patient?q=" + searchString;
+    }
+
+    @Override
+    public String getUser() {
+        return "admin";
+    }
+
+    @Override
+    public String getPassword() {
+        return "test";
     }
 }

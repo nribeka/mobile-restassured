@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.sample;
+package com.burkeware.search.api.sample.domain;
 
 public class Patient {
 

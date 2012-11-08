@@ -1,6 +1,11 @@
-resourceClass=com.burkeware.search.api.sample.Patient
-representationType=single
-rootNode=$
+# Resource configuration
+resource.name=Patient
+node.root=$
+resource.object=com.burkeware.search.api.sample.domain.Patient
+algorithm.class=com.burkeware.search.api.sample.algorithm.PatientAlgorithm
+resolver.class=com.burkeware.search.api.sample.resolver.PatientResolver
+field.unique=uuid
+# Mapping
 uuid=$.uuid
 identifier=$.identifiers[0].identifier
 name=$.person.display

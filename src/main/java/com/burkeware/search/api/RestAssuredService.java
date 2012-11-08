@@ -37,6 +37,7 @@ public interface RestAssuredService {
      *
      * @param searchString the string to filter object that from the REST resource.
      * @param resource     the resource object which will describe how to index the json resource to lucene.
+     * @should index data from the rest resource
      */
     void loadObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 

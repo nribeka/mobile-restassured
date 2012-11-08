@@ -18,23 +18,21 @@ import java.util.List;
 
 public class ResourceConstants {
 
-    public static final String RESOURCE_NAME = "resourceName";
+    public static final String RESOURCE_NAME = "resource.name";
 
-    public static final String RESOURCE_CLASS = "resourceClass";
+    public static final String RESOURCE_OBJECT = "resource.object";
 
-    public static final String RESOURCE_OBJECT = "resourceObject";
+    public static final String RESOURCE_ROOT_NODE = "node.root";
 
-    public static final String RESOURCE_ROOT_NODE = "rootNode";
-
-    public static final String RESOURCE_UNIQUE_FIELD = "uniqueField";
+    public static final String RESOURCE_UNIQUE_FIELD = "field.unique";
 
     public static final String RESOURCE_ALGORITHM_CLASS = "algorithm.class";
 
-    public static final String RESOURCE_URI_CLASS = "uriFigureOuter.class";
+    public static final String RESOURCE_URI_RESOLVER_CLASS = "resolver.class";
 
     public static final List<String> NON_SEARCHABLE_FIELDS = Arrays.asList(RESOURCE_NAME, RESOURCE_OBJECT,
-            RESOURCE_ROOT_NODE, RESOURCE_UNIQUE_FIELD, RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_CLASS);
+            RESOURCE_ROOT_NODE, RESOURCE_UNIQUE_FIELD, RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_RESOLVER_CLASS);
 
     public static final List<String> MANDATORY_FIELDS = Arrays.asList(RESOURCE_NAME, RESOURCE_OBJECT,
-            RESOURCE_ROOT_NODE, RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_CLASS);
+            RESOURCE_ROOT_NODE, RESOURCE_ALGORITHM_CLASS, RESOURCE_URI_RESOLVER_CLASS);
 }

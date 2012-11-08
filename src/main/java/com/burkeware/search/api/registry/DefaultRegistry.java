@@ -47,6 +47,17 @@ public class DefaultRegistry<K, V> implements Registry<K, V> {
     }
 
     /**
+     * Generic method to remove an entry from the registry
+     *
+     * @param key the key to the element in the registry
+     * @return the value to be removed
+     */
+    @Override
+    public V removeEntry(final K key) {
+        return getEntries().remove(key);
+    }
+
+    /**
      * @param key the key to value we would like to return
      * @return the registry's value
      */

@@ -12,8 +12,9 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package com.burkeware.search.api.sample;
+package com.burkeware.search.api.sample.algorithm;
 
+import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.jayway.jsonpath.JsonPath;
 
