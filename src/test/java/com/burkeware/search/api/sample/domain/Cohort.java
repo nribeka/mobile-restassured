@@ -15,19 +15,9 @@ package com.burkeware.search.api.sample.domain;
 
 public class Cohort {
 
-    private Integer id;
-
     private String uuid;
 
     private String name;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
 
     public String getUuid() {
         return uuid;

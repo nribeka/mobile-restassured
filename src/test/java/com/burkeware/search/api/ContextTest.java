@@ -23,13 +23,13 @@ import com.burkeware.search.api.resource.ObjectResource;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.ResourceConstants;
 import com.burkeware.search.api.resource.SearchableField;
+import com.burkeware.search.api.sample.algorithm.CohortMemberAlgorithm;
 import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
-import com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm;
 import com.burkeware.search.api.sample.domain.Billing;
 import com.burkeware.search.api.sample.domain.Encounter;
 import com.burkeware.search.api.sample.domain.Observation;
 import com.burkeware.search.api.sample.domain.Patient;
-import com.burkeware.search.api.sample.resolver.PatientCohortResolver;
+import com.burkeware.search.api.sample.resolver.CohortMemberResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.burkeware.search.api.util.ResourceUtil;
@@ -108,8 +108,8 @@ public class ContextTest {
         Context context = injector.getInstance(Context.class);
 
         context.registerObject(Patient.class);
-        context.registerAlgorithm(PatientCohortAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(PatientCohortResolver.class, PatientResolver.class);
+        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
+        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -132,8 +132,8 @@ public class ContextTest {
         Context context = injector.getInstance(Context.class);
 
         context.registerObject(Patient.class);
-        context.registerAlgorithm(PatientCohortAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(PatientCohortResolver.class, PatientResolver.class);
+        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
+        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -175,8 +175,8 @@ public class ContextTest {
         Context context = injector.getInstance(Context.class);
 
         context.registerObject(Patient.class);
-        context.registerAlgorithm(PatientCohortAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(PatientCohortResolver.class, PatientResolver.class);
+        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
+        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -204,8 +204,8 @@ public class ContextTest {
         Context context = injector.getInstance(Context.class);
 
         context.registerObject(Patient.class);
-        context.registerAlgorithm(PatientCohortAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(PatientCohortResolver.class, PatientResolver.class);
+        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
+        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -258,18 +258,18 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerAlgorithm(PatientAlgorithm.class, PatientCohortAlgorithm.class);
+        context.registerAlgorithm(PatientAlgorithm.class, CohortMemberAlgorithm.class);
         Class<? extends Algorithm> clazz = context.removeAlgorithm(PatientAlgorithm.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientAlgorithm.class.getName(), clazz.getName());
 
-        clazz = context.removeAlgorithm(PatientCohortAlgorithm.class);
+        clazz = context.removeAlgorithm(CohortMemberAlgorithm.class);
         Assert.assertNotNull(clazz);
-        Assert.assertEquals(PatientCohortAlgorithm.class.getName(), clazz.getName());
+        Assert.assertEquals(CohortMemberAlgorithm.class.getName(), clazz.getName());
 
         clazz = context.removeAlgorithm(PatientAlgorithm.class);
         Assert.assertNotNull(clazz);
-        clazz = context.removeAlgorithm(PatientCohortAlgorithm.class);
+        clazz = context.removeAlgorithm(CohortMemberAlgorithm.class);
         Assert.assertNotNull(clazz);
     }
 
@@ -282,18 +282,45 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerResolver(PatientResolver.class, PatientCohortResolver.class);
+        context.registerResolver(PatientResolver.class, CohortMemberResolver.class);
         Class<? extends Resolver> clazz = context.removeResolver(PatientResolver.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientResolver.class.getName(), clazz.getName());
 
-        clazz = context.removeResolver(PatientCohortResolver.class);
+        clazz = context.removeResolver(CohortMemberResolver.class);
         Assert.assertNotNull(clazz);
-        Assert.assertEquals(PatientCohortResolver.class.getName(), clazz.getName());
+        Assert.assertEquals(CohortMemberResolver.class.getName(), clazz.getName());
 
         clazz = context.removeResolver(PatientResolver.class);
         Assert.assertNotNull(clazz);
-        clazz = context.removeResolver(PatientCohortResolver.class);
+        clazz = context.removeResolver(CohortMemberResolver.class);
         Assert.assertNotNull(clazz);
+    }
+
+    /**
+     * @verifies return removed resource object
+     * @see Context#removeResource(com.burkeware.search.api.resource.Resource)
+     */
+    @Test
+    public void removeResource_shouldReturnRemovedResourceObject() throws Exception {
+
+        URL url = Context.class.getResource("sample/j2l");
+        File resourceFile = new File(url.getPath());
+
+        Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
+        Context context = injector.getInstance(Context.class);
+
+        context.registerObject(Patient.class);
+        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
+        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+
+        context.registerResources(resourceFile);
+
+        int resourceCounter = context.getResources().size();
+        Resource registeredResource = context.getResource("Cohort Member Resource");
+        Resource removedResource = context.removeResource(registeredResource);
+        Assert.assertEquals(registeredResource, removedResource);
+
+        Assert.assertEquals(resourceCounter - 1, context.getResources().size());
     }
 }

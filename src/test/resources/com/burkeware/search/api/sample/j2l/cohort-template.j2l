@@ -2,8 +2,8 @@
 resource.name=Cohort Resource
 node.root=$.results
 resource.object=com.burkeware.search.api.sample.domain.Patient
-algorithm.class=com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm
-resolver.class=com.burkeware.search.api.sample.resolver.PatientCohortResolver
+algorithm.class=com.burkeware.search.api.sample.algorithm.CohortMemberAlgorithm
+resolver.class=com.burkeware.search.api.sample.resolver.CohortMemberResolver
 field.unique=uuid
 # Mapping
 uuid=$.patient.uuid

@@ -15,7 +15,7 @@ package com.burkeware.search.api.sample.resolver;
 
 import com.burkeware.search.api.resolver.Resolver;
 
-public class PatientCohortResolver implements Resolver {
+public class CohortMemberResolver implements Resolver {
 
     /**
      * Return the full REST resource based on the search string passed to the method.

@@ -18,7 +18,7 @@ import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.jayway.jsonpath.JsonPath;
 
-public class PatientCohortAlgorithm implements Algorithm {
+public class CohortMemberAlgorithm implements Algorithm {
 
     /**
      * Implementation of this method will define how the patient will be serialized from the JSON representation.

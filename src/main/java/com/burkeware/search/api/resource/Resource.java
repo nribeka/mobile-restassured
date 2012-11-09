@@ -25,8 +25,8 @@ import java.util.List;
  * <p/>
  * It is strongly advised for the user of the API to extends the <code>ObjectResource</code> instead of directly
  * implementing this interface.
- *
- * @param <T> the object for which the resource is applicable
+ * <p/>
+ * TODO: think about how we can use the etags to limit number of download need to be performed to get data from server.
  */
 public interface Resource {
 

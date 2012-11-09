@@ -18,10 +18,10 @@ import com.burkeware.search.api.module.FactoryModule;
 import com.burkeware.search.api.module.SearchModule;
 import com.burkeware.search.api.module.UnitTestModule;
 import com.burkeware.search.api.resource.Resource;
+import com.burkeware.search.api.sample.algorithm.CohortMemberAlgorithm;
 import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
-import com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm;
 import com.burkeware.search.api.sample.domain.Patient;
-import com.burkeware.search.api.sample.resolver.PatientCohortResolver;
+import com.burkeware.search.api.sample.resolver.CohortMemberResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -49,8 +49,8 @@ public class RestAssuredServiceTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
 
         Context context = injector.getInstance(Context.class);
-        context.registerAlgorithm(PatientAlgorithm.class, PatientCohortAlgorithm.class);
-        context.registerResolver(PatientResolver.class, PatientCohortResolver.class);
+        context.registerAlgorithm(PatientAlgorithm.class, CohortMemberAlgorithm.class);
+        context.registerResolver(PatientResolver.class, CohortMemberResolver.class);
         context.registerObject(Patient.class);
         context.registerResources(new File(url.getPath()));
 
