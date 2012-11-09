@@ -13,5 +13,5 @@
  */
 package com.burkeware.search.api.sample.domain;
 
-public class Obs {
+public class Observation {
 }

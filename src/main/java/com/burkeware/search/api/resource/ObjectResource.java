@@ -197,8 +197,6 @@ public class ObjectResource implements Resource {
      */
     @Override
     public List<SearchableField> getSearchableFields() {
-        if (searchableFields == null)
-            searchableFields = new ArrayList<SearchableField>();
         return searchableFields;
     }
 

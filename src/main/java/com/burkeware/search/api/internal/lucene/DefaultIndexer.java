@@ -411,6 +411,7 @@ public class DefaultIndexer implements Indexer {
 
     @Override
     public Object updateObject(final Object object, final Resource resource) throws ParseException, IOException {
+        // TODO: need to look at how to incorporate Class.cast() here using resource.getResourceObject()
         IndexWriter indexWriter = null;
         IndexSearcher indexSearcher = null;
         try {

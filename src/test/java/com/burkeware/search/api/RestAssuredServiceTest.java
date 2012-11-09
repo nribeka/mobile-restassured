@@ -14,6 +14,8 @@
 
 package com.burkeware.search.api;
 
+import com.burkeware.search.api.module.FactoryModule;
+import com.burkeware.search.api.module.SearchModule;
 import com.burkeware.search.api.module.UnitTestModule;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
@@ -21,7 +23,8 @@ import com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm;
 import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.sample.resolver.PatientCohortResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
-import com.burkeware.search.api.util.ContextUtil;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -29,6 +32,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 public class RestAssuredServiceTest {
 
@@ -42,15 +46,22 @@ public class RestAssuredServiceTest {
     public void loadObjects_shouldIndexDataFromTheRestResource() throws Exception {
         URL url = RestAssuredService.class.getResource("sample/j2l");
 
-        Context context = ContextUtil.createContext(new UnitTestModule());
+        Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
+
+        Context context = injector.getInstance(Context.class);
         context.registerAlgorithm(PatientAlgorithm.class, PatientCohortAlgorithm.class);
         context.registerResolver(PatientResolver.class, PatientCohortResolver.class);
         context.registerObject(Patient.class);
         context.registerResources(new File(url.getPath()));
 
-        Resource resource = context.getResource("Patient");
+        Resource resource = context.getResource("Cohort Resource");
         Assert.assertNotNull(resource);
 
-        log.info(context);
+        RestAssuredService service = injector.getInstance(RestAssuredService.class);
+        service.loadObjects("Testarius", resource);
+
+        List<Object> objects = service.getObjects("Testarius", resource);
+        Assert.assertNotNull(objects);
+        Assert.assertTrue(objects.size() > 0);
     }
 }

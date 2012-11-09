@@ -27,7 +27,7 @@ import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
 import com.burkeware.search.api.sample.algorithm.PatientCohortAlgorithm;
 import com.burkeware.search.api.sample.domain.Billing;
 import com.burkeware.search.api.sample.domain.Encounter;
-import com.burkeware.search.api.sample.domain.Obs;
+import com.burkeware.search.api.sample.domain.Observation;
 import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.sample.resolver.PatientCohortResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
@@ -228,14 +228,14 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class, Obs.class, Encounter.class, Billing.class);
+        context.registerObject(Patient.class, Observation.class, Encounter.class, Billing.class);
         Class clazz = context.removeObject(Patient.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(Patient.class.getName(), clazz.getName());
 
-        clazz = context.removeObject(Obs.class);
+        clazz = context.removeObject(Observation.class);
         Assert.assertNotNull(clazz);
-        Assert.assertEquals(Obs.class.getName(), clazz.getName());
+        Assert.assertEquals(Observation.class.getName(), clazz.getName());
 
         clazz = context.removeObject(Encounter.class);
         Assert.assertNotNull(clazz);
@@ -243,7 +243,7 @@ public class ContextTest {
 
         clazz = context.removeObject(Patient.class);
         Assert.assertNull(clazz);
-        clazz = context.removeObject(Obs.class);
+        clazz = context.removeObject(Observation.class);
         Assert.assertNull(clazz);
         clazz = context.removeObject(Encounter.class);
         Assert.assertNull(clazz);
@@ -258,19 +258,19 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(PatientAlgorithm.class, PatientCohortAlgorithm.class);
-        Class clazz = context.removeObject(PatientAlgorithm.class);
+        context.registerAlgorithm(PatientAlgorithm.class, PatientCohortAlgorithm.class);
+        Class<? extends Algorithm> clazz = context.removeAlgorithm(PatientAlgorithm.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientAlgorithm.class.getName(), clazz.getName());
 
-        clazz = context.removeObject(PatientCohortAlgorithm.class);
+        clazz = context.removeAlgorithm(PatientCohortAlgorithm.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientCohortAlgorithm.class.getName(), clazz.getName());
 
-        clazz = context.removeObject(PatientAlgorithm.class);
-        Assert.assertNull(clazz);
-        clazz = context.removeObject(PatientCohortAlgorithm.class);
-        Assert.assertNull(clazz);
+        clazz = context.removeAlgorithm(PatientAlgorithm.class);
+        Assert.assertNotNull(clazz);
+        clazz = context.removeAlgorithm(PatientCohortAlgorithm.class);
+        Assert.assertNotNull(clazz);
     }
 
     /**
@@ -282,18 +282,18 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(PatientResolver.class, PatientCohortResolver.class);
-        Class clazz = context.removeObject(PatientResolver.class);
+        context.registerResolver(PatientResolver.class, PatientCohortResolver.class);
+        Class<? extends Resolver> clazz = context.removeResolver(PatientResolver.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientResolver.class.getName(), clazz.getName());
 
-        clazz = context.removeObject(PatientCohortResolver.class);
+        clazz = context.removeResolver(PatientCohortResolver.class);
         Assert.assertNotNull(clazz);
         Assert.assertEquals(PatientCohortResolver.class.getName(), clazz.getName());
 
-        clazz = context.removeObject(PatientResolver.class);
-        Assert.assertNull(clazz);
-        clazz = context.removeObject(PatientCohortResolver.class);
-        Assert.assertNull(clazz);
+        clazz = context.removeResolver(PatientResolver.class);
+        Assert.assertNotNull(clazz);
+        clazz = context.removeResolver(PatientCohortResolver.class);
+        Assert.assertNotNull(clazz);
     }
 }

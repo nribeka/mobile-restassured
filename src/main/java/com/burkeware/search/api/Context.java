@@ -158,6 +158,13 @@ public class Context {
         return resourceRegistry.getEntryValue(name);
     }
 
+    /**
+     * Remove a resource from the resource registry.
+     *
+     * @param resource the resource to be removed
+     * @return the removed resource or null if no resource was removed
+     * @should return removed resource object
+     */
     public Resource removeResource(final Resource resource) {
         return resourceRegistry.removeEntry(resource.getName());
     }
