@@ -284,8 +284,12 @@ public class DefaultIndexer implements Indexer {
     @Override
     public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
         Object object = null;
+
         String queryString = createClassQuery(clazz) + " AND " + StringUtil.quote(key);
+        System.out.println("Query string in getObject(String, Class): " + queryString);
+
         Query query = parser.parse(queryString);
+
         List<Document> documents = findDocuments(query);
         if (!CollectionUtil.isEmpty(documents)) {
             if (documents.size() > 1)
@@ -305,8 +309,12 @@ public class DefaultIndexer implements Indexer {
     @Override
     public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         Object object = null;
+
         String queryString = createResourceQuery(resource) + " AND " + StringUtil.quote(key);
+        System.out.println("Query string in getObject(String, Resource): " + queryString);
+
         Query query = parser.parse(queryString);
+
         List<Document> documents = findDocuments(query);
         if (!CollectionUtil.isEmpty(documents)) {
             if (documents.size() > 1)
@@ -326,8 +334,14 @@ public class DefaultIndexer implements Indexer {
     public List<Object> getObjects(final String searchString, final Class clazz)
             throws ParseException, IOException {
         List<Object> objects = new ArrayList<Object>();
-        String queryString = createClassQuery(clazz) + " AND " + searchString;
+
+        String queryString = createClassQuery(clazz);
+        if (!StringUtil.isEmpty(searchString))
+            queryString = queryString + " AND " + searchString;
+        System.out.println("Query string in getObjects(String, Class): " + queryString);
+
         Query query = parser.parse(queryString);
+
         List<Document> documents = findDocuments(query);
         if (!CollectionUtil.isEmpty(documents)) {
             for (Document document : documents) {
@@ -345,8 +359,14 @@ public class DefaultIndexer implements Indexer {
     public List<Object> getObjects(final String searchString, final Resource resource)
             throws ParseException, IOException {
         List<Object> objects = new ArrayList<Object>();
-        String queryString = createResourceQuery(resource) + " AND " + searchString;
+
+        String queryString = createResourceQuery(resource);
+        if (!StringUtil.isEmpty(searchString))
+            queryString = queryString + " AND " + searchString;
+        System.out.println("Query string in getObjects(String, Resource): " + queryString);
+
         Query query = parser.parse(queryString);
+
         List<Document> documents = findDocuments(query);
         if (!CollectionUtil.isEmpty(documents)) {
             Algorithm algorithm = resource.getAlgorithm();
