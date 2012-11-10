@@ -285,7 +285,7 @@ public class DefaultIndexer implements Indexer {
     public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
         Object object = null;
 
-        String queryString = createClassQuery(clazz) + " AND " + StringUtil.quote(key);
+        String queryString = createClassQuery(clazz) + " AND " + key;
         System.out.println("Query string in getObject(String, Class): " + queryString);
 
         Query query = parser.parse(queryString);
@@ -310,7 +310,7 @@ public class DefaultIndexer implements Indexer {
     public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         Object object = null;
 
-        String queryString = createResourceQuery(resource) + " AND " + StringUtil.quote(key);
+        String queryString = createResourceQuery(resource) + " AND " + key;
         System.out.println("Query string in getObject(String, Resource): " + queryString);
 
         Query query = parser.parse(queryString);
