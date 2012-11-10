@@ -44,7 +44,7 @@ public class StringUtil {
      * @param str the String to check, may be null
      * @return <code>true</code> if the String is empty or null
      */
-    public static boolean isEmpty(String str) {
+    public static boolean isEmpty(final String str) {
         return str == null || str.length() == 0;
     }
 
@@ -60,7 +60,7 @@ public class StringUtil {
      * @param str the String to check, may be null
      * @return <code>true</code> if the String is null, empty or whitespace
      */
-    public static boolean isBlank(String str) {
+    public static boolean isBlank(final String str) {
         int strLen;
         if (str == null || (strLen = str.length()) == 0)
             return true;
@@ -92,7 +92,7 @@ public class StringUtil {
      * @return the passed in String, or the empty String if it was <code>null</code>
      * @see String#valueOf(Object)
      */
-    public static String defaultString(String str) {
+    public static String defaultString(final String str) {
         return str == null ? EMPTY : str;
     }
 
@@ -107,7 +107,7 @@ public class StringUtil {
      * @param defaultStr the default String to return if the input is <code>null</code>, may be null
      * @return the passed in String, or the default if it was <code>null</code>
      */
-    public static String defaultString(String str, String defaultStr) {
+    public static String defaultString(final String str, final String defaultStr) {
         return str == null ? defaultStr : str;
     }
 
@@ -125,7 +125,7 @@ public class StringUtil {
      * @return <code>true</code> if the Strings are equal, case sensitive, or both <code>null</code>
      * @see java.lang.String#equals(Object)
      */
-    public static boolean equals(String str1, String str2) {
+    public static boolean equals(final String str1, final String str2) {
         return str1 == null ? str2 == null : str1.equals(str2);
     }
 
@@ -143,7 +143,7 @@ public class StringUtil {
      * @return <code>true</code> if the Strings are equal, case insensitive, or both <code>null</code>
      * @see java.lang.String#equalsIgnoreCase(String)
      */
-    public static boolean equalsIgnoreCase(String str1, String str2) {
+    public static boolean equalsIgnoreCase(final String str1, final String str2) {
         return str1 == null ? str2 == null : str1.equalsIgnoreCase(str2);
     }
 
@@ -159,7 +159,7 @@ public class StringUtil {
      * @param str the String to parse, may be null
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    public static String[] split(String str) {
+    public static String[] split(final String str) {
         return split(str, null, -1);
     }
 
@@ -177,7 +177,7 @@ public class StringUtil {
      * @param separatorChar the character used as the delimiter
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    public static String[] split(String str, char separatorChar) {
+    public static String[] split(final String str, final char separatorChar) {
         return splitWorker(str, separatorChar, false);
     }
 
@@ -195,7 +195,7 @@ public class StringUtil {
      * @param separatorChars the characters used as the delimiters, <code>null</code> splits on whitespace
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    public static String[] split(String str, String separatorChars) {
+    public static String[] split(final String str, final String separatorChars) {
         return splitWorker(str, separatorChars, -1, false);
     }
 
@@ -215,7 +215,7 @@ public class StringUtil {
      *                       no limit
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    public static String[] split(String str, String separatorChars, int max) {
+    public static String[] split(final String str, final String separatorChars, final int max) {
         return splitWorker(str, separatorChars, max, false);
     }
 
@@ -232,7 +232,8 @@ public class StringUtil {
      *                          if <code>false</code>, adjacent separators are treated as one separator.
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    private static String[] splitWorker(String str, String separatorChars, int max, boolean preserveAllTokens) {
+    private static String[] splitWorker(final String str, final String separatorChars,
+                                        final int max, final boolean preserveAllTokens) {
         if (str == null)
             return null;
 
@@ -324,7 +325,7 @@ public class StringUtil {
      *                          if <code>false</code>, adjacent separators are treated as one separator.
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
-    private static String[] splitWorker(String str, char separatorChar, boolean preserveAllTokens) {
+    private static String[] splitWorker(final String str, final char separatorChar, final boolean preserveAllTokens) {
         if (str == null)
             return null;
 

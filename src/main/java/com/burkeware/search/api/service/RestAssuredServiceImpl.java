@@ -134,6 +134,11 @@ public class RestAssuredServiceImpl implements RestAssuredService {
         return indexer.getObject(key, resource);
     }
 
+    @Override
+    public void commitIndex() throws IOException {
+        indexer.commitIndex();
+    }
+
     /**
      * Search for objects with matching <code>searchString</code> and <code>clazz</code> type from the local repository.
      * This method will return list of all matching object or empty list if no object match the search string.

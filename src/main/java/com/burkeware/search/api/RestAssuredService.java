@@ -83,6 +83,9 @@ public interface RestAssuredService {
      */
     Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
+    void commitIndex() throws IOException;
+
+
     /**
      * Search for objects with matching <code>searchString</code> and <code>clazz</code> type from the local repository.
      * This method will return list of all matching object or empty list if no object match the search string.

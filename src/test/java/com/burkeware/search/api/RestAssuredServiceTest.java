@@ -47,7 +47,8 @@ public class RestAssuredServiceTest {
      */
     @Test
     public void loadObjects_shouldIndexDataFromTheRestResource() throws Exception {
-        URL url = RestAssuredService.class.getResource("sample/j2l");
+        URL j2l = RestAssuredService.class.getResource("sample/j2l");
+        URL object = RestAssuredService.class.getResource("sample/corpus");
 
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
 
@@ -55,15 +56,16 @@ public class RestAssuredServiceTest {
         context.registerAlgorithm(PatientAlgorithm.class, CohortAlgorithm.class, CohortMemberAlgorithm.class);
         context.registerResolver(PatientResolver.class, CohortResolver.class, CohortMemberResolver.class);
         context.registerObject(Patient.class, Cohort.class);
-        context.registerResources(new File(url.getPath()));
+        context.registerResources(new File(j2l.getPath()));
 
-        Resource resource = context.getResource("Cohort Resource");
+        Resource resource = context.getResource("Patient");
         Assert.assertNotNull(resource);
 
         RestAssuredService service = injector.getInstance(RestAssuredService.class);
-        service.loadObjects("Male", resource);
+        service.loadObjects("Male", resource, new File(object.getPath()));
+        service.commitIndex();
 
-        List<Object> objects = service.getObjects("name: Male", resource);
+        List<Object> objects = service.getObjects("name:Test*", resource);
         Assert.assertNotNull(objects);
         Assert.assertTrue(objects.size() > 0);
     }

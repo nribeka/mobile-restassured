@@ -40,4 +40,6 @@ public interface Indexer {
     Object deleteObject(final Object object, final Resource resource) throws ParseException, IOException;
 
     Object updateObject(final Object object, final Resource resource) throws ParseException, IOException;
+
+    void commitIndex() throws IOException;
 }
