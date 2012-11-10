@@ -13,9 +13,9 @@
  */
 package com.burkeware.search.api.sample.resolver;
 
-import com.burkeware.search.api.resolver.Resolver;
+import com.burkeware.search.api.util.StringUtil;
 
-public class CohortResolver implements Resolver {
+public class CohortResolver extends AbstractResolver {
 
     /**
      * Return the full REST resource based on the search string passed to the method.
@@ -25,16 +25,9 @@ public class CohortResolver implements Resolver {
      */
     @Override
     public String resolve(final String searchString) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String getUser() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String getPassword() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String param = StringUtil.EMPTY;
+        if (!StringUtil.isEmpty(searchString))
+            param = "?q=" + searchString;
+        return WEB_SERVER + WEB_CONTEXT + "/ws/rest/v1/cohort" + param;
     }
 }

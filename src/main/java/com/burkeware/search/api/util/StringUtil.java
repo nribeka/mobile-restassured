@@ -78,7 +78,7 @@ public class StringUtil {
      * @return quoted string or null if the input is null
      */
     public static String quote(String str) {
-        return str != null ? "'" + str + "'" : null;
+        return str != null ? "\"" + str + "\"" : null;
     }
 
     /**

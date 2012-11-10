@@ -14,9 +14,7 @@
 
 package com.burkeware.search.api.sample.resolver;
 
-import com.burkeware.search.api.resolver.Resolver;
-
-public class PatientResolver implements Resolver {
+public class PatientResolver extends AbstractResolver {
 
     /**
      * Return the full URI to the REST resource based on the search string passed to the method.
@@ -26,16 +24,6 @@ public class PatientResolver implements Resolver {
      */
     @Override
     public String resolve(final String searchString) {
-        return "http://localhost:8080/openmrs/ws/rest/v1/patient?q=" + searchString;
-    }
-
-    @Override
-    public String getUser() {
-        return "admin";
-    }
-
-    @Override
-    public String getPassword() {
-        return "test";
+        return WEB_SERVER + WEB_CONTEXT + "ws/rest/v1/patient?q=" + searchString;
     }
 }

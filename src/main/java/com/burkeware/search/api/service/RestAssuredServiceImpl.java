@@ -148,8 +148,8 @@ public class RestAssuredServiceImpl implements RestAssuredService {
     }
 
     @Override
-    public List<Object> getObjects(final String searchString, final Resource resource) throws ParseException,
-            IOException {
+    public List<Object> getObjects(final String searchString, final Resource resource)
+            throws ParseException, IOException {
         return indexer.getObjects(searchString, resource);
     }
 

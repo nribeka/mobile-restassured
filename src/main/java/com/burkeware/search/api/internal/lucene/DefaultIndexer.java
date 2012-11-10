@@ -195,11 +195,11 @@ public class DefaultIndexer implements Indexer {
         Document document = new Document();
         document.add(new Field(DEFAULT_FIELD_JSON, jsonObject.toString(), Field.Store.YES, Field.Index.NO));
         document.add(new Field(DEFAULT_FIELD_UUID, UUID.randomUUID().toString(), Field.Store.YES,
-                Field.Index.NOT_ANALYZED_NO_NORMS));
+                Field.Index.ANALYZED_NO_NORMS));
         document.add(new Field(DEFAULT_FIELD_CLASS, resource.getResourceObject().getName(), Field.Store.YES,
-                Field.Index.NOT_ANALYZED_NO_NORMS));
+                Field.Index.ANALYZED_NO_NORMS));
         document.add(new Field(DEFAULT_FIELD_RESOURCE, resource.getName(), Field.Store.YES,
-                Field.Index.NOT_ANALYZED_NO_NORMS));
+                Field.Index.ANALYZED_NO_NORMS));
 
         for (SearchableField searchableField : resource.getSearchableFields()) {
             Object value = JsonPath.read(jsonObject, searchableField.getExpression());
@@ -288,7 +288,7 @@ public class DefaultIndexer implements Indexer {
                     Resource resource = resourceRegistry.getEntryValue(resourceName);
                     Algorithm algorithm = resource.getAlgorithm();
                     String json = document.get(DEFAULT_FIELD_JSON);
-                    object = algorithm.serialize(json);
+                    object = algorithm.deserialize(json);
                 }
             }
         } finally {
@@ -315,7 +315,7 @@ public class DefaultIndexer implements Indexer {
                 Algorithm algorithm = resource.getAlgorithm();
                 for (Document document : documents) {
                     String json = document.get(DEFAULT_FIELD_JSON);
-                    object = algorithm.serialize(json);
+                    object = algorithm.deserialize(json);
                 }
             }
         } finally {
@@ -341,7 +341,7 @@ public class DefaultIndexer implements Indexer {
                     Resource resource = resourceRegistry.getEntryValue(resourceName);
                     Algorithm algorithm = resource.getAlgorithm();
                     String json = document.get(DEFAULT_FIELD_JSON);
-                    objects.add(algorithm.serialize(json));
+                    objects.add(algorithm.deserialize(json));
                 }
             }
         } finally {
@@ -365,7 +365,7 @@ public class DefaultIndexer implements Indexer {
                 Algorithm algorithm = resource.getAlgorithm();
                 for (Document document : documents) {
                     String json = document.get(DEFAULT_FIELD_JSON);
-                    objects.add(algorithm.serialize(json));
+                    objects.add(algorithm.deserialize(json));
                 }
             }
         } finally {

@@ -18,10 +18,13 @@ import com.burkeware.search.api.module.FactoryModule;
 import com.burkeware.search.api.module.SearchModule;
 import com.burkeware.search.api.module.UnitTestModule;
 import com.burkeware.search.api.resource.Resource;
+import com.burkeware.search.api.sample.algorithm.CohortAlgorithm;
 import com.burkeware.search.api.sample.algorithm.CohortMemberAlgorithm;
 import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
+import com.burkeware.search.api.sample.domain.Cohort;
 import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.sample.resolver.CohortMemberResolver;
+import com.burkeware.search.api.sample.resolver.CohortResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -49,18 +52,18 @@ public class RestAssuredServiceTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
 
         Context context = injector.getInstance(Context.class);
-        context.registerAlgorithm(PatientAlgorithm.class, CohortMemberAlgorithm.class);
-        context.registerResolver(PatientResolver.class, CohortMemberResolver.class);
-        context.registerObject(Patient.class);
+        context.registerAlgorithm(PatientAlgorithm.class, CohortAlgorithm.class, CohortMemberAlgorithm.class);
+        context.registerResolver(PatientResolver.class, CohortResolver.class, CohortMemberResolver.class);
+        context.registerObject(Patient.class, Cohort.class);
         context.registerResources(new File(url.getPath()));
 
         Resource resource = context.getResource("Cohort Resource");
         Assert.assertNotNull(resource);
 
         RestAssuredService service = injector.getInstance(RestAssuredService.class);
-        service.loadObjects("Testarius", resource);
+        service.loadObjects("Male", resource);
 
-        List<Object> objects = service.getObjects("Testarius", resource);
+        List<Object> objects = service.getObjects("name: Male", resource);
         Assert.assertNotNull(objects);
         Assert.assertTrue(objects.size() > 0);
     }

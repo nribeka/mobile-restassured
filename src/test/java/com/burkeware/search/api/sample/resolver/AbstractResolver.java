@@ -11,37 +11,23 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.burkeware.search.api.sample.domain;
+package com.burkeware.search.api.sample.resolver;
 
-public class Cohort {
+import com.burkeware.search.api.resolver.Resolver;
 
-    private String uuid;
+public abstract class AbstractResolver implements Resolver {
 
-    private String name;
+    protected final String WEB_CONTEXT = "openmrs-standalone/";
 
-    private String json;
+    protected final String WEB_SERVER = "http://localhost:8081/";
 
-    public String getUuid() {
-        return uuid;
+    @Override
+    public String getPassword() {
+        return "test";
     }
 
-    public void setUuid(final String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(final String json) {
-        this.json = json;
+    @Override
+    public String getUser() {
+        return "admin";
     }
 }
