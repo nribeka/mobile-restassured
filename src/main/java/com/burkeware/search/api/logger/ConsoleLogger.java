@@ -24,7 +24,7 @@ public class ConsoleLogger extends BaseLogger {
     /**
      * Create the console logger to log messages from the REST Assured framework.
      */
-    public ConsoleLogger() {
+    protected ConsoleLogger() {
         this.dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss.SSS");
     }
 

@@ -64,7 +64,6 @@ public class RestAssuredServiceTest {
 
         RestAssuredService service = injector.getInstance(RestAssuredService.class);
         service.loadObjects("Male", resource, new File(object.getPath()));
-        service.commitIndex();
 
         List<Patient> patients = service.getObjects("name:Test*", Patient.class);
         Assert.assertNotNull(patients);

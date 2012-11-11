@@ -19,10 +19,12 @@ import com.burkeware.search.api.internal.lucene.DefaultIndexer;
 import com.burkeware.search.api.internal.lucene.Indexer;
 import com.burkeware.search.api.internal.provider.AnalyzerProvider;
 import com.burkeware.search.api.internal.provider.DirectoryProvider;
-import com.burkeware.search.api.internal.provider.IndexReaderProvider;
-import com.burkeware.search.api.internal.provider.IndexSearcherProvider;
-import com.burkeware.search.api.internal.provider.IndexWriterProvider;
+import com.burkeware.search.api.internal.provider.ReaderProvider;
 import com.burkeware.search.api.internal.provider.SearchProvider;
+import com.burkeware.search.api.internal.provider.SearcherProvider;
+import com.burkeware.search.api.internal.provider.WriterProvider;
+import com.burkeware.search.api.logger.ConsoleLogger;
+import com.burkeware.search.api.logger.Logger;
 import com.burkeware.search.api.service.RestAssuredServiceImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -43,6 +45,7 @@ public class SearchModule extends AbstractModule {
     protected void configure() {
         bind(RestAssuredService.class).to(RestAssuredServiceImpl.class).in(Singleton.class);
         bind(Indexer.class).to(DefaultIndexer.class).in(Singleton.class);
+        bind(Logger.class).to(ConsoleLogger.class).in(Singleton.class);
 
         bind(Version.class).toInstance(Version.LUCENE_36);
         bind(Analyzer.class).toProvider(AnalyzerProvider.class);
@@ -52,12 +55,12 @@ public class SearchModule extends AbstractModule {
                 .in(Singleton.class);
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexReader.class)
-                .to(IndexReaderProvider.class);
+                .to(ReaderProvider.class);
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexSearcher.class)
-                .to(IndexSearcherProvider.class);
+                .to(SearcherProvider.class);
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, IndexWriter.class)
-                .to(IndexWriterProvider.class);
+                .to(WriterProvider.class);
     }
 }

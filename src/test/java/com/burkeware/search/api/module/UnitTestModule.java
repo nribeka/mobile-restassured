@@ -13,6 +13,7 @@
  */
 package com.burkeware.search.api.module;
 
+import com.burkeware.search.api.logger.LogLevel;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
@@ -25,5 +26,7 @@ public class UnitTestModule extends AbstractModule {
     protected void configure() {
         bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("/tmp/lucene");
         bind(String.class).annotatedWith(Names.named("configuration.lucene.document.key")).toInstance("uuid");
+
+        bind(LogLevel.class).toInstance(LogLevel.DEBUG);
     }
 }

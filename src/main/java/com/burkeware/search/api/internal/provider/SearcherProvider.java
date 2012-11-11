@@ -16,22 +16,22 @@ package com.burkeware.search.api.internal.provider;
 
 import com.google.inject.Inject;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.Directory;
+import org.apache.lucene.search.IndexSearcher;
 
 import java.io.IOException;
 
-public class IndexReaderProvider implements SearchProvider<IndexReader> {
+public class SearcherProvider implements SearchProvider<IndexSearcher> {
 
-    private final SearchProvider<Directory> directoryProvider;
+    private SearchProvider<IndexReader> readerProvider;
 
     @Inject
-    protected IndexReaderProvider(final SearchProvider<Directory> directoryProvider) {
-        this.directoryProvider = directoryProvider;
+    protected SearcherProvider(final SearchProvider<IndexReader> readerProvider) {
+        this.readerProvider = readerProvider;
     }
 
     @Override
-    public IndexReader get() throws IOException {
-        Directory directory = directoryProvider.get();
-        return IndexReader.open(directory);
+    public IndexSearcher get() throws IOException {
+        IndexReader indexReader = readerProvider.get();
+        return new IndexSearcher(indexReader);
     }
 }

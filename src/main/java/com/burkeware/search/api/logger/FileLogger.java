@@ -36,7 +36,7 @@ public class FileLogger extends BaseLogger {
      *
      * @param file the log file
      */
-    public FileLogger(final File file) {
+    protected FileLogger(final File file) {
         try {
             this.dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss.SSS");
             this.outputStream = new BufferedOutputStream(new FileOutputStream(file));

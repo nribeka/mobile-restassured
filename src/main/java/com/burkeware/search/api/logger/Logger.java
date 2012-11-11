@@ -16,6 +16,13 @@ package com.burkeware.search.api.logger;
 public interface Logger {
 
     /**
+     * Check if debugging is enabled for this logger.
+     *
+     * @return true if debug is enabled
+     */
+    boolean isDebugEnabled();
+
+    /**
      * Set the level of logging will be performed
      *
      * @param logLevel the log level
@@ -79,5 +86,4 @@ public interface Logger {
      * @param throwable throwable object to log
      */
     void debug(final String source, final String message, final Throwable throwable);
-
 }

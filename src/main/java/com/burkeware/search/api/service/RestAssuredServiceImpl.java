@@ -65,7 +65,8 @@ public class RestAssuredServiceImpl implements RestAssuredService {
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("Authorization", basicAuth);
 
-        indexer.updateIndex(resource, connection.getInputStream());
+        indexer.loadObjects(resource, connection.getInputStream());
+        indexer.commit();
     }
 
     /**
@@ -81,11 +82,16 @@ public class RestAssuredServiceImpl implements RestAssuredService {
     @Override
     public void loadObjects(final String searchString, final Resource resource, final File file)
             throws ParseException, IOException {
+        loadObjects(searchString, resource, file, true);
+    }
+
+    private void loadObjects(final String searchString, final Resource resource, final File file,
+                             final boolean commit) throws ParseException, IOException {
         if (!file.isDirectory()) {
             FileInputStream stream = null;
             try {
                 stream = new FileInputStream(file);
-                indexer.updateIndex(resource, stream);
+                indexer.loadObjects(resource, stream);
             } finally {
                 if (stream != null)
                     stream.close();
@@ -94,9 +100,12 @@ public class RestAssuredServiceImpl implements RestAssuredService {
             File[] files = file.listFiles();
             if (files != null) {
                 for (File jsonFile : files)
-                    loadObjects(searchString, resource, jsonFile);
+                    loadObjects(searchString, resource, jsonFile, false);
             }
         }
+
+        if (commit)
+            indexer.commit();
     }
 
     /**
@@ -132,11 +141,6 @@ public class RestAssuredServiceImpl implements RestAssuredService {
     @Override
     public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         return indexer.getObject(key, resource);
-    }
-
-    @Override
-    public void commitIndex() throws IOException {
-        indexer.commitIndex();
     }
 
     /**

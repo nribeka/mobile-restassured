@@ -23,9 +23,9 @@ import java.util.List;
 
 public interface Indexer {
 
-    void updateIndex(final Resource resource, final InputStream inputStream) throws ParseException, IOException;
+    void loadObjects(final Resource resource, final InputStream inputStream) throws ParseException, IOException;
 
-    void updateIndex(final Resource resource, final Reader reader) throws ParseException, IOException;
+    void loadObjects(final Resource resource, final Reader reader) throws ParseException, IOException;
 
     <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
@@ -41,5 +41,5 @@ public interface Indexer {
 
     Object updateObject(final Object object, final Resource resource) throws ParseException, IOException;
 
-    void commitIndex() throws IOException;
+    void commit() throws IOException;
 }

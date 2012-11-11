@@ -13,9 +13,8 @@
  */
 package com.burkeware.search.api.internal.lucene;
 
-import com.burkeware.search.api.internal.provider.IndexSearcherProvider;
-import com.burkeware.search.api.internal.provider.IndexWriterProvider;
-import com.burkeware.search.api.logger.ConsoleLogger;
+import com.burkeware.search.api.internal.provider.SearcherProvider;
+import com.burkeware.search.api.internal.provider.WriterProvider;
 import com.burkeware.search.api.logger.Logger;
 import com.burkeware.search.api.registry.Registry;
 import com.burkeware.search.api.resource.Resource;
@@ -53,6 +52,16 @@ public class DefaultIndexer implements Indexer {
 
     private Logger logger;
 
+    private IndexWriter indexWriter;
+
+    private IndexSearcher indexSearcher;
+
+    private WriterProvider writerProvider;
+
+    private SearcherProvider searcherProvider;
+
+    private Registry<String, Resource> resourceRegistry;
+
     private final QueryParser parser;
 
     private static final String DEFAULT_FIELD_UUID = "_uuid";
@@ -65,26 +74,23 @@ public class DefaultIndexer implements Indexer {
 
     private static final Integer DEFAULT_MAX_DOCUMENTS = 20;
 
-    private IndexWriter indexWriter;
+    @Inject
+    protected DefaultIndexer(final @Named("configuration.lucene.document.key") String defaultField,
+                             final Version version, final Analyzer analyzer) {
+        this.parser = new QueryParser(version, defaultField, analyzer);
+    }
 
-    private IndexSearcher indexSearcher;
+    /**
+     * Private Getter and Setter section **
+     */
 
-    private final IndexWriterProvider writerProvider;
-
-    private final IndexSearcherProvider searcherProvider;
-
-    private final Registry<String, Resource> resourceRegistry;
+    private Logger getLogger() {
+        return logger;
+    }
 
     @Inject
-    public DefaultIndexer(final IndexWriterProvider writerProvider, final IndexSearcherProvider searcherProvider,
-                          final @Named("configuration.lucene.document.key") String defaultField,
-                          final Version version, final Analyzer analyzer,
-                          final Registry<String, Resource> resourceRegistry) {
-        this.logger = new ConsoleLogger();
-        this.writerProvider = writerProvider;
-        this.searcherProvider = searcherProvider;
-        this.resourceRegistry = resourceRegistry;
-        this.parser = new QueryParser(version, defaultField, analyzer);
+    private void setLogger(final Logger logger) {
+        this.logger = logger;
     }
 
     private IndexWriter getIndexWriter() throws IOException {
@@ -93,24 +99,70 @@ public class DefaultIndexer implements Indexer {
         return indexWriter;
     }
 
-    private IndexSearcher getIndexSearcher() {
+    private void setIndexWriter(final IndexWriter indexWriter) {
+        this.indexWriter = indexWriter;
+    }
+
+    private IndexSearcher getIndexSearcher() throws IOException {
         try {
-            indexSearcher = searcherProvider.get();
+            if (indexSearcher == null)
+                indexSearcher = searcherProvider.get();
         } catch (IOException e) {
-            // silent on exception, just return null index searcher
+            // silently ignoring this exception.
         }
         return indexSearcher;
     }
 
+    private void setIndexSearcher(final IndexSearcher indexSearcher) {
+        this.indexSearcher = indexSearcher;
+    }
+
+    private WriterProvider getWriterProvider() {
+        return writerProvider;
+    }
+
+    @Inject
+    private void setWriterProvider(final WriterProvider writerProvider) {
+        this.writerProvider = writerProvider;
+    }
+
+    private SearcherProvider getSearcherProvider() {
+        return searcherProvider;
+    }
+
+    @Inject
+    private void setSearcherProvider(final SearcherProvider searcherProvider) {
+        this.searcherProvider = searcherProvider;
+    }
+
+    private Registry<String, Resource> getResourceRegistry() {
+        return resourceRegistry;
+    }
+
+    @Inject
+    private void setResourceRegistry(final Registry<String, Resource> resourceRegistry) {
+        this.resourceRegistry = resourceRegistry;
+    }
+
+    /**
+     * Low level lucene operation **
+     */
+
+    /**
+     * Commit the changes in the index. This method will ensure that deletion, update and addition to the lucene index
+     * are written to the filesystem (persisted).
+     *
+     * @throws IOException when the operation encounter errors.
+     */
     @Override
-    public void commitIndex() throws IOException {
-        if (indexWriter != null) {
-            indexWriter.commit();
-            indexWriter.close();
+    public void commit() throws IOException {
+        if (getIndexWriter() != null) {
+            getIndexWriter().commit();
+            getIndexWriter().close();
         }
         // remove the instance
-        indexWriter = null;
-        indexSearcher = null;
+        setIndexWriter(null);
+        setIndexSearcher(null);
     }
 
     /**
@@ -244,13 +296,24 @@ public class DefaultIndexer implements Indexer {
         writer.addDocument(document);
     }
 
+    /**
+     * Delete an entry from the lucene index. The method will search for a single entry in the index (throwing
+     * IOException when more than one index match the object).
+     *
+     * @param jsonObject  the json object to be deleted.
+     * @param resource    the resource definition used to register the json to lucene index.
+     * @param indexWriter the index writer used to delete the index.
+     * @throws ParseException when the json can't be used to create a query to identify the correct lucene index.
+     * @throws IOException    when other error happens during the deletion process.
+     */
     private void deleteObject(final Object jsonObject, final Resource resource, final IndexWriter indexWriter)
             throws ParseException, IOException {
         String queryString =
                 createResourceQuery(resource) + " AND "
                         + createSearchableFieldQuery(jsonObject, resource.getSearchableFields());
-        logger.info(this.getClass().getSimpleName(),
-                "Query string in deleteObject(Object, Resource, IndexWriter): " + queryString);
+
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Query deleteObject(): " + queryString);
 
         Query query = parser.parse(queryString);
         List<Document> documents = findDocuments(query);
@@ -259,6 +322,16 @@ public class DefaultIndexer implements Indexer {
         indexWriter.deleteDocuments(query);
     }
 
+    /**
+     * Update an object inside the lucene index with a new data. Updating process practically means deleting old object
+     * and then adding the new object.
+     *
+     * @param jsonObject  the json object to be updated.
+     * @param resource    the resource definition used to register the json to lucene index.
+     * @param indexWriter the index writer used to delete the index.
+     * @throws ParseException when the json can't be used to create a query to identify the correct lucene index.
+     * @throws IOException    when other error happens during the deletion process.
+     */
     private void updateObject(final Object jsonObject, final Resource resource, final IndexWriter indexWriter)
             throws ParseException, IOException {
         // search for the same object, if they exists, delete them :)
@@ -268,14 +341,14 @@ public class DefaultIndexer implements Indexer {
     }
 
     @Override
-    public void updateIndex(final Resource resource, final InputStream inputStream)
+    public void loadObjects(final Resource resource, final InputStream inputStream)
             throws ParseException, IOException {
         InputStreamReader reader = new InputStreamReader(inputStream);
-        updateIndex(resource, reader);
+        loadObjects(resource, reader);
     }
 
     @Override
-    public void updateIndex(final Resource resource, final Reader reader)
+    public void loadObjects(final Resource resource, final Reader reader)
             throws ParseException, IOException {
         String json = IOUtil.readAsString(reader);
         Object jsonObject = JsonPath.read(json, resource.getRootNode());
@@ -293,23 +366,24 @@ public class DefaultIndexer implements Indexer {
         T object = null;
 
         String queryString = createClassQuery(clazz) + " AND " + key;
-        logger.info(this.getClass().getSimpleName(), "Query string in getObject(String, Class): " + queryString);
+
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Query getObject(String, Class): " + queryString);
 
         Query query = parser.parse(queryString);
-
         List<Document> documents = findDocuments(query);
-        if (!CollectionUtil.isEmpty(documents)) {
-            if (documents.size() > 1)
-                throw new IOException(
-                        "Unable to uniquely identify an object using key: '" + key + "'in the repository.");
-            for (Document document : documents) {
-                String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
-                Resource resource = resourceRegistry.getEntryValue(resourceName);
-                Algorithm algorithm = resource.getAlgorithm();
-                String json = document.get(DEFAULT_FIELD_JSON);
-                object = clazz.cast(algorithm.deserialize(json));
-            }
+
+        if (!CollectionUtil.isEmpty(documents) && documents.size() > 1)
+            throw new IOException("Unable to uniquely identify an object using key: '" + key + "'in the repository.");
+
+        for (Document document : documents) {
+            String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
+            Resource resource = getResourceRegistry().getEntryValue(resourceName);
+            Algorithm algorithm = resource.getAlgorithm();
+            String json = document.get(DEFAULT_FIELD_JSON);
+            object = clazz.cast(algorithm.deserialize(json));
         }
+
         return object;
     }
 
@@ -318,22 +392,21 @@ public class DefaultIndexer implements Indexer {
         Object object = null;
 
         String queryString = createResourceQuery(resource) + " AND " + key;
-        logger.info(this.getClass().getSimpleName(), "Query string in getObject(String, Resource): " + queryString);
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Query getObject(String,  Resource): " + queryString);
 
         Query query = parser.parse(queryString);
-
         List<Document> documents = findDocuments(query);
-        if (!CollectionUtil.isEmpty(documents)) {
-            if (documents.size() > 1)
-                throw new IOException(
-                        "Unable to uniquely identify an object using key: '" + key + "'in the repository.");
 
-            Algorithm algorithm = resource.getAlgorithm();
-            for (Document document : documents) {
-                String json = document.get(DEFAULT_FIELD_JSON);
-                object = algorithm.deserialize(json);
-            }
+        if (!CollectionUtil.isEmpty(documents) && documents.size() > 1)
+            throw new IOException("Unable to uniquely identify an object using key: '" + key + "'in the repository.");
+
+        Algorithm algorithm = resource.getAlgorithm();
+        for (Document document : documents) {
+            String json = document.get(DEFAULT_FIELD_JSON);
+            object = algorithm.deserialize(json);
         }
+
         return object;
     }
 
@@ -345,19 +418,18 @@ public class DefaultIndexer implements Indexer {
         String queryString = createClassQuery(clazz);
         if (!StringUtil.isEmpty(searchString))
             queryString = queryString + " AND " + searchString;
-        logger.info(this.getClass().getSimpleName(), "Query string in getObjects(String, Class): " + queryString);
+
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Query getObjects(String, Class): " + queryString);
 
         Query query = parser.parse(queryString);
-
         List<Document> documents = findDocuments(query);
-        if (!CollectionUtil.isEmpty(documents)) {
-            for (Document document : documents) {
-                String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
-                Resource resource = resourceRegistry.getEntryValue(resourceName);
-                Algorithm algorithm = resource.getAlgorithm();
-                String json = document.get(DEFAULT_FIELD_JSON);
-                objects.add(clazz.cast(algorithm.deserialize(json)));
-            }
+        for (Document document : documents) {
+            String resourceName = document.get(DEFAULT_FIELD_RESOURCE);
+            Resource resource = getResourceRegistry().getEntryValue(resourceName);
+            Algorithm algorithm = resource.getAlgorithm();
+            String json = document.get(DEFAULT_FIELD_JSON);
+            objects.add(clazz.cast(algorithm.deserialize(json)));
         }
         return objects;
     }
@@ -370,17 +442,16 @@ public class DefaultIndexer implements Indexer {
         String queryString = createResourceQuery(resource);
         if (!StringUtil.isEmpty(searchString))
             queryString = queryString + " AND " + searchString;
-        logger.info(this.getClass().getSimpleName(), "Query string in getObjects(String, Resource): " + queryString);
+
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Query getObjects(String, Resource): " + queryString);
 
         Query query = parser.parse(queryString);
-
         List<Document> documents = findDocuments(query);
-        if (!CollectionUtil.isEmpty(documents)) {
-            Algorithm algorithm = resource.getAlgorithm();
-            for (Document document : documents) {
-                String json = document.get(DEFAULT_FIELD_JSON);
-                objects.add(algorithm.deserialize(json));
-            }
+        Algorithm algorithm = resource.getAlgorithm();
+        for (Document document : documents) {
+            String json = document.get(DEFAULT_FIELD_JSON);
+            objects.add(algorithm.deserialize(json));
         }
         return objects;
     }
@@ -390,6 +461,7 @@ public class DefaultIndexer implements Indexer {
         String jsonString = resource.serialize(object);
         Object jsonObject = JsonPath.read(jsonString, "$");
         writeObject(jsonObject, resource, getIndexWriter());
+        commit();
         return object;
     }
 
@@ -398,15 +470,16 @@ public class DefaultIndexer implements Indexer {
         String jsonString = resource.serialize(object);
         Object jsonObject = JsonPath.read(jsonString, "$");
         deleteObject(jsonObject, resource, getIndexWriter());
+        commit();
         return object;
     }
 
     @Override
     public Object updateObject(final Object object, final Resource resource) throws ParseException, IOException {
-        // TODO: need to look at how to incorporate Class.cast() here using resource.getResourceObject()
         String jsonString = resource.serialize(object);
         Object jsonObject = JsonPath.read(jsonString, "$");
         updateObject(jsonObject, resource, getIndexWriter());
+        commit();
         return object;
     }
 }

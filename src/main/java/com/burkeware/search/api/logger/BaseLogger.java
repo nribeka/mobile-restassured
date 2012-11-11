@@ -13,6 +13,8 @@
  */
 package com.burkeware.search.api.logger;
 
+import com.google.inject.Inject;
+
 public abstract class BaseLogger implements Logger {
 
     private LogLevel logLevel;
@@ -21,8 +23,18 @@ public abstract class BaseLogger implements Logger {
         this.logLevel = LogLevel.INFO;
     }
 
-    public BaseLogger(final LogLevel logLevel) {
+    protected BaseLogger(final LogLevel logLevel) {
         this.logLevel = logLevel;
+    }
+
+    /**
+     * Check if debugging is enabled for this logger.
+     *
+     * @return true if debug is enabled
+     */
+    @Override
+    public boolean isDebugEnabled() {
+        return getLevel() == LogLevel.DEBUG;
     }
 
     /**
@@ -31,6 +43,7 @@ public abstract class BaseLogger implements Logger {
      * @param logLevel the log level
      */
     @Override
+    @Inject(optional = true)
     public void setLogLevel(final LogLevel logLevel) {
         this.logLevel = logLevel;
     }

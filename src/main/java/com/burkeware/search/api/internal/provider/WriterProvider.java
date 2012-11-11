@@ -23,7 +23,7 @@ import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 
-public class IndexWriterProvider implements SearchProvider<IndexWriter> {
+public class WriterProvider implements SearchProvider<IndexWriter> {
 
     private final Version version;
 
@@ -32,8 +32,8 @@ public class IndexWriterProvider implements SearchProvider<IndexWriter> {
     private final SearchProvider<Directory> directoryProvider;
 
     @Inject
-    protected IndexWriterProvider(final Version version, final Analyzer analyzer,
-                                  final SearchProvider<Directory> directoryProvider) {
+    protected WriterProvider(final Version version, final Analyzer analyzer,
+                             final SearchProvider<Directory> directoryProvider) {
         this.version = version;
         this.analyzer = analyzer;
         this.directoryProvider = directoryProvider;
