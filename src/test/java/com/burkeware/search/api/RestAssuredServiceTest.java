@@ -26,6 +26,7 @@ import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.sample.resolver.CohortMemberResolver;
 import com.burkeware.search.api.sample.resolver.CohortResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
+import com.burkeware.search.api.util.StringUtil;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.logging.Log;
@@ -65,8 +66,16 @@ public class RestAssuredServiceTest {
         service.loadObjects("Male", resource, new File(object.getPath()));
         service.commitIndex();
 
-        List<Object> objects = service.getObjects("name:Test*", resource);
-        Assert.assertNotNull(objects);
-        Assert.assertTrue(objects.size() > 0);
+        List<Patient> patients = service.getObjects("name:Test*", Patient.class);
+        Assert.assertNotNull(patients);
+        Assert.assertTrue(patients.size() > 0);
+        for (Patient patient : patients) {
+            Assert.assertNotNull(patient);
+            Assert.assertEquals(Patient.class, patient.getClass());
+        }
+
+        Patient patient = service.getObject("name: " + StringUtil.quote("Testarius Ambote Indakasi"), Patient.class);
+        Assert.assertNotNull(patient);
+        Assert.assertEquals(Patient.class, patient.getClass());
     }
 }

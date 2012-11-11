@@ -113,7 +113,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return object with matching key and clazz or null
      */
     @Override
-    public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
+    public <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException {
         return indexer.getObject(key, clazz);
     }
 
@@ -148,7 +148,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
     @Override
-    public List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException {
+    public <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException {
         return indexer.getObjects(searchString, clazz);
     }
 

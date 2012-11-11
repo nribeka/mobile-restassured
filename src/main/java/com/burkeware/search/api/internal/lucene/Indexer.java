@@ -27,11 +27,11 @@ public interface Indexer {
 
     void updateIndex(final Resource resource, final Reader reader) throws ParseException, IOException;
 
-    Object getObject(final String key, final Class clazz) throws ParseException, IOException;
+    <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
     Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
-    List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException;
+    <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException;
 
     List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 

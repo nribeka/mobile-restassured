@@ -15,6 +15,8 @@ package com.burkeware.search.api.internal.lucene;
 
 import com.burkeware.search.api.internal.provider.IndexSearcherProvider;
 import com.burkeware.search.api.internal.provider.IndexWriterProvider;
+import com.burkeware.search.api.logger.ConsoleLogger;
+import com.burkeware.search.api.logger.Logger;
 import com.burkeware.search.api.registry.Registry;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.SearchableField;
@@ -49,6 +51,8 @@ import java.util.UUID;
 
 public class DefaultIndexer implements Indexer {
 
+    private Logger logger;
+
     private final QueryParser parser;
 
     private static final String DEFAULT_FIELD_UUID = "_uuid";
@@ -76,6 +80,7 @@ public class DefaultIndexer implements Indexer {
                           final @Named("configuration.lucene.document.key") String defaultField,
                           final Version version, final Analyzer analyzer,
                           final Registry<String, Resource> resourceRegistry) {
+        this.logger = new ConsoleLogger();
         this.writerProvider = writerProvider;
         this.searcherProvider = searcherProvider;
         this.resourceRegistry = resourceRegistry;
@@ -244,9 +249,11 @@ public class DefaultIndexer implements Indexer {
         String queryString =
                 createResourceQuery(resource) + " AND "
                         + createSearchableFieldQuery(jsonObject, resource.getSearchableFields());
+        logger.info(this.getClass().getSimpleName(),
+                "Query string in deleteObject(Object, Resource, IndexWriter): " + queryString);
+
         Query query = parser.parse(queryString);
         List<Document> documents = findDocuments(query);
-        System.out.println("Document Size: " + documents.size());
         if (!CollectionUtil.isEmpty(documents) && documents.size() > 1)
             throw new IOException("Unable to uniquely identify an object using the json object in the repository.");
         indexWriter.deleteDocuments(query);
@@ -282,11 +289,11 @@ public class DefaultIndexer implements Indexer {
     }
 
     @Override
-    public Object getObject(final String key, final Class clazz) throws ParseException, IOException {
-        Object object = null;
+    public <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException {
+        T object = null;
 
         String queryString = createClassQuery(clazz) + " AND " + key;
-        System.out.println("Query string in getObject(String, Class): " + queryString);
+        logger.info(this.getClass().getSimpleName(), "Query string in getObject(String, Class): " + queryString);
 
         Query query = parser.parse(queryString);
 
@@ -300,7 +307,7 @@ public class DefaultIndexer implements Indexer {
                 Resource resource = resourceRegistry.getEntryValue(resourceName);
                 Algorithm algorithm = resource.getAlgorithm();
                 String json = document.get(DEFAULT_FIELD_JSON);
-                object = algorithm.deserialize(json);
+                object = clazz.cast(algorithm.deserialize(json));
             }
         }
         return object;
@@ -311,7 +318,7 @@ public class DefaultIndexer implements Indexer {
         Object object = null;
 
         String queryString = createResourceQuery(resource) + " AND " + key;
-        System.out.println("Query string in getObject(String, Resource): " + queryString);
+        logger.info(this.getClass().getSimpleName(), "Query string in getObject(String, Resource): " + queryString);
 
         Query query = parser.parse(queryString);
 
@@ -331,14 +338,14 @@ public class DefaultIndexer implements Indexer {
     }
 
     @Override
-    public List<Object> getObjects(final String searchString, final Class clazz)
+    public <T> List<T> getObjects(final String searchString, final Class<T> clazz)
             throws ParseException, IOException {
-        List<Object> objects = new ArrayList<Object>();
+        List<T> objects = new ArrayList<T>();
 
         String queryString = createClassQuery(clazz);
         if (!StringUtil.isEmpty(searchString))
             queryString = queryString + " AND " + searchString;
-        System.out.println("Query string in getObjects(String, Class): " + queryString);
+        logger.info(this.getClass().getSimpleName(), "Query string in getObjects(String, Class): " + queryString);
 
         Query query = parser.parse(queryString);
 
@@ -349,7 +356,7 @@ public class DefaultIndexer implements Indexer {
                 Resource resource = resourceRegistry.getEntryValue(resourceName);
                 Algorithm algorithm = resource.getAlgorithm();
                 String json = document.get(DEFAULT_FIELD_JSON);
-                objects.add(algorithm.deserialize(json));
+                objects.add(clazz.cast(algorithm.deserialize(json)));
             }
         }
         return objects;
@@ -363,7 +370,7 @@ public class DefaultIndexer implements Indexer {
         String queryString = createResourceQuery(resource);
         if (!StringUtil.isEmpty(searchString))
             queryString = queryString + " AND " + searchString;
-        System.out.println("Query string in getObjects(String, Resource): " + queryString);
+        logger.info(this.getClass().getSimpleName(), "Query string in getObjects(String, Resource): " + queryString);
 
         Query query = parser.parse(queryString);
 

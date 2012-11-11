@@ -67,7 +67,7 @@ public interface RestAssuredService {
      * @param clazz the expected return type of the object
      * @return object with matching key and clazz or null
      */
-    Object getObject(final String key, final Class clazz) throws ParseException, IOException;
+    <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
     /**
      * Search for an object with matching <code>key</code> and <code>clazz</code> type from the local repository. This
@@ -94,7 +94,7 @@ public interface RestAssuredService {
      * @param searchString the search string to limit the number of returned object
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
      */
-    List<Object> getObjects(final String searchString, final Class clazz) throws ParseException, IOException;
+    <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException;
 
     List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 
