@@ -103,8 +103,8 @@ public abstract class BaseFactory<T> implements Factory<T> {
     @Override
     public T createImplementation(final String key) {
         if (!getMappings().containsKey(key)) {
-            String message = "Cannot create " + implementationName + ". There's no registered "
-                    + implementationName + " for the parameters " + "(" + key + "). ";
+            String message = "Unable to create " + implementationName + " implementation. There's no registered "
+                    + implementationName + " for the parameter " + "(" + key + ").\n";
 
             List<String> hints = getKeys();
             if (hints.isEmpty()) {

@@ -35,6 +35,8 @@ public class CohortAlgorithm implements Algorithm {
         String name = JsonPath.read(jsonObject, "$.display");
         cohort.setName(name);
 
+        cohort.setJson(serialized);
+
         return cohort;
     }
 

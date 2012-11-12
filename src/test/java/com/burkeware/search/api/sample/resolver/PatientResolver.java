@@ -14,6 +14,8 @@
 
 package com.burkeware.search.api.sample.resolver;
 
+import com.burkeware.search.api.util.StringUtil;
+
 public class PatientResolver extends AbstractResolver {
 
     /**
@@ -24,6 +26,9 @@ public class PatientResolver extends AbstractResolver {
      */
     @Override
     public String resolve(final String searchString) {
-        return WEB_SERVER + WEB_CONTEXT + "ws/rest/v1/patient?q=" + searchString;
+        String param = StringUtil.EMPTY;
+        if (!StringUtil.isEmpty(searchString))
+            param = "?q=" + searchString;
+        return WEB_SERVER + WEB_CONTEXT + "ws/rest/v1/patient" + param;
     }
 }

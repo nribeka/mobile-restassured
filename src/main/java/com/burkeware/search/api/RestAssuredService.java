@@ -37,7 +37,7 @@ public interface RestAssuredService {
      *
      * @param searchString the string to filter object that from the REST resource.
      * @param resource     the resource object which will describe how to index the json resource to lucene.
-     * @should index data from the rest resource
+     * @should load objects based on the resource description
      */
     void loadObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 
@@ -49,6 +49,7 @@ public interface RestAssuredService {
      * @param searchString the search string to filter object returned from the file.
      * @param resource     the resource object which will describe how to index the json resource to lucene.
      * @param file         the file in the filesystem where the json resource is saved.
+     * @should load object from filesystem based on the resource description
      * @see com.burkeware.search.api.RestAssuredService#loadObjects(String, com.burkeware.search.api.resource.Resource)
      */
     void loadObjects(final String searchString, final Resource resource, final File file)
@@ -66,6 +67,8 @@ public interface RestAssuredService {
      * @param key   the key to distinguish the object
      * @param clazz the expected return type of the object
      * @return object with matching key and clazz or null
+     * @should return object with matching key and type
+     * @should return null when no object match the key and type
      */
     <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
@@ -80,6 +83,8 @@ public interface RestAssuredService {
      * @param key      the key to distinguish the object
      * @param resource the resource object which will describe how to index the json resource to lucene.
      * @return object with matching key and clazz or null
+     * @should return object with matching key
+     * @should return null when no object match the key
      */
     Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
@@ -87,12 +92,25 @@ public interface RestAssuredService {
      * Search for objects with matching <code>searchString</code> and <code>clazz</code> type from the local repository.
      * This method will return list of all matching object or empty list if no object match the search string.
      *
-     * @param clazz        the expected return type of the object
      * @param searchString the search string to limit the number of returned object
+     * @param clazz        the expected return type of the object
      * @return list of all object with matching <code>searchString</code> and <code>clazz</code> or empty list
+     * @should return all object matching the search search string and class
+     * @should return empty list when no object match the search string and class
      */
     <T> List<T> getObjects(final String searchString, final Class<T> clazz) throws ParseException, IOException;
 
+    /**
+     * Search for objects with matching <code>searchString</code> and <code>resource</code> type from the local
+     * repository. This method will return list of all matching object or empty list if no object match the search
+     * string.
+     *
+     * @param searchString the search string to limit the number of returned object
+     * @param resource     the resource descriptor used to register the object
+     * @return list of all object with matching <code>searchString</code> and <code>resource</code> or empty list
+     * @should return all object matching the search search string and class
+     * @should return empty list when no object match the search string and class
+     */
     List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 
     /**
@@ -107,6 +125,7 @@ public interface RestAssuredService {
      * @param object   the object to be removed if the object exists.
      * @param resource the resource object which will describe how to index the json resource to lucene.
      * @return removed object or null if no object was removed.
+     * @should remove an object from the internal index system
      */
     Object invalidate(final Object object, final Resource resource) throws ParseException, IOException;
 
@@ -119,6 +138,7 @@ public interface RestAssuredService {
      * @param object   the object to be created
      * @param resource the resource object which will describe how to index the json resource to lucene.
      * @return the object that was created
+     * @should create a new object in the internal index system
      */
     Object createObject(final Object object, final Resource resource) throws ParseException, IOException;
 

@@ -1,5 +1,5 @@
 # Resource configuration
-resource.name=Patient
+resource.name=Patient Resource
 node.root=$
 resource.object=com.burkeware.search.api.sample.domain.Patient
 algorithm.class=com.burkeware.search.api.sample.algorithm.PatientAlgorithm

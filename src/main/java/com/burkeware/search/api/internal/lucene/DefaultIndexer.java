@@ -293,6 +293,10 @@ public class DefaultIndexer implements Indexer {
             document.add(new Field(searchableField.getName(), String.valueOf(value), Field.Store.YES,
                     Field.Index.ANALYZED_NO_NORMS));
         }
+
+        if (getLogger().isDebugEnabled())
+            getLogger().debug(this.getClass().getSimpleName(), "Writing document: " + document);
+
         writer.addDocument(document);
     }
 

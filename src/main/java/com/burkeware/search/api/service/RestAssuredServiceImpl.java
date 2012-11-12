@@ -156,6 +156,15 @@ public class RestAssuredServiceImpl implements RestAssuredService {
         return indexer.getObjects(searchString, clazz);
     }
 
+    /**
+     * Search for objects with matching <code>searchString</code> and <code>resource</code> type from the local
+     * repository. This method will return list of all matching object or empty list if no object match the search
+     * string.
+     *
+     * @param searchString the search string to limit the number of returned object
+     * @param resource     the resource descriptor used to register the object
+     * @return list of all object with matching <code>searchString</code> and <code>resource</code> or empty list
+     */
     @Override
     public List<Object> getObjects(final String searchString, final Resource resource)
             throws ParseException, IOException {

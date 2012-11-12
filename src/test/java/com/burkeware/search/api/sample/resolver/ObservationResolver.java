@@ -13,21 +13,21 @@
  */
 package com.burkeware.search.api.sample.resolver;
 
-import com.burkeware.search.api.resolver.Resolver;
+import com.burkeware.search.api.util.StringUtil;
 
-public abstract class AbstractResolver implements Resolver {
+public class ObservationResolver extends AbstractResolver {
 
-    protected final String WEB_SERVER = "http://localhost:8081/";
-
-    protected final String WEB_CONTEXT = "openmrs-standalone/";
-
+    /**
+     * Return the full REST resource based on the search string passed to the method.
+     *
+     * @param searchString the search string
+     * @return full URI to the REST resource
+     */
     @Override
-    public String getPassword() {
-        return "test";
-    }
-
-    @Override
-    public String getUser() {
-        return "admin";
+    public String resolve(final String searchString) {
+        String param = StringUtil.EMPTY;
+        if (!StringUtil.isEmpty(searchString))
+            param = param + "?patient=" + searchString;
+        return WEB_SERVER + WEB_CONTEXT + "ws/rest/v1/obs" + param;
     }
 }
