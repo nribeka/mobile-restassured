@@ -69,6 +69,7 @@ public interface RestAssuredService {
      * @return object with matching key and clazz or null
      * @should return object with matching key and type
      * @should return null when no object match the key and type
+     * @should throw IOException if the key and class unable to return unique object
      */
     <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException;
 
@@ -85,6 +86,7 @@ public interface RestAssuredService {
      * @return object with matching key and clazz or null
      * @should return object with matching key
      * @should return null when no object match the key
+     * @should throw IOException if the key and resource unable to return unique object
      */
     Object getObject(final String key, final Resource resource) throws ParseException, IOException;
 
@@ -108,8 +110,8 @@ public interface RestAssuredService {
      * @param searchString the search string to limit the number of returned object
      * @param resource     the resource descriptor used to register the object
      * @return list of all object with matching <code>searchString</code> and <code>resource</code> or empty list
-     * @should return all object matching the search search string and class
-     * @should return empty list when no object match the search string and class
+     * @should return all object matching the search search string and resource
+     * @should return empty list when no object match the search string and resource
      */
     List<Object> getObjects(final String searchString, final Resource resource) throws ParseException, IOException;
 

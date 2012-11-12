@@ -95,7 +95,7 @@ public class DefaultIndexer implements Indexer {
 
     private IndexWriter getIndexWriter() throws IOException {
         if (indexWriter == null)
-            indexWriter = writerProvider.get();
+            indexWriter = getWriterProvider().get();
         return indexWriter;
     }
 
@@ -106,7 +106,7 @@ public class DefaultIndexer implements Indexer {
     private IndexSearcher getIndexSearcher() throws IOException {
         try {
             if (indexSearcher == null)
-                indexSearcher = searcherProvider.get();
+                indexSearcher = getSearcherProvider().get();
         } catch (IOException e) {
             // silently ignoring this exception.
         }
@@ -369,7 +369,9 @@ public class DefaultIndexer implements Indexer {
     public <T> T getObject(final String key, final Class<T> clazz) throws ParseException, IOException {
         T object = null;
 
-        String queryString = createClassQuery(clazz) + " AND " + key;
+        String queryString = createClassQuery(clazz);
+        if (!StringUtil.isEmpty(key))
+            queryString = queryString + " AND " + key;
 
         if (getLogger().isDebugEnabled())
             getLogger().debug(this.getClass().getSimpleName(), "Query getObject(String, Class): " + queryString);
@@ -395,7 +397,10 @@ public class DefaultIndexer implements Indexer {
     public Object getObject(final String key, final Resource resource) throws ParseException, IOException {
         Object object = null;
 
-        String queryString = createResourceQuery(resource) + " AND " + key;
+        String queryString = createResourceQuery(resource);
+        if (!StringUtil.isEmpty(key))
+            queryString = queryString + " AND " + key;
+
         if (getLogger().isDebugEnabled())
             getLogger().debug(this.getClass().getSimpleName(), "Query getObject(String,  Resource): " + queryString);
 

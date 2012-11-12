@@ -23,13 +23,18 @@ import com.burkeware.search.api.resource.ObjectResource;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.ResourceConstants;
 import com.burkeware.search.api.resource.SearchableField;
+import com.burkeware.search.api.sample.algorithm.CohortAlgorithm;
 import com.burkeware.search.api.sample.algorithm.CohortMemberAlgorithm;
+import com.burkeware.search.api.sample.algorithm.ObservationAlgorithm;
 import com.burkeware.search.api.sample.algorithm.PatientAlgorithm;
 import com.burkeware.search.api.sample.domain.Billing;
+import com.burkeware.search.api.sample.domain.Cohort;
 import com.burkeware.search.api.sample.domain.Encounter;
 import com.burkeware.search.api.sample.domain.Observation;
 import com.burkeware.search.api.sample.domain.Patient;
 import com.burkeware.search.api.sample.resolver.CohortMemberResolver;
+import com.burkeware.search.api.sample.resolver.CohortResolver;
+import com.burkeware.search.api.sample.resolver.ObservationResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.burkeware.search.api.util.ResourceUtil;
@@ -107,9 +112,11 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class);
-        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+        context.registerObject(Patient.class, Cohort.class, Observation.class);
+        context.registerAlgorithm(CohortAlgorithm.class, CohortMemberAlgorithm.class, PatientAlgorithm.class,
+                ObservationAlgorithm.class);
+        context.registerResolver(CohortResolver.class, CohortMemberResolver.class, PatientResolver.class,
+                ObservationResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -131,9 +138,11 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class);
-        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+        context.registerObject(Patient.class, Cohort.class, Observation.class);
+        context.registerAlgorithm(CohortAlgorithm.class, CohortMemberAlgorithm.class, PatientAlgorithm.class,
+                ObservationAlgorithm.class);
+        context.registerResolver(CohortResolver.class, CohortMemberResolver.class, PatientResolver.class,
+                ObservationResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -145,7 +154,6 @@ public class ContextTest {
             Assert.assertNotNull(registeredResource);
             Assert.assertEquals(stringRegistry.getEntryValue(ResourceConstants.RESOURCE_ROOT_NODE),
                     registeredResource.getRootNode());
-            Assert.assertEquals(Patient.class, registeredResource.getResourceObject());
             Assert.assertTrue(Algorithm.class.isAssignableFrom(registeredResource.getAlgorithm().getClass()));
             Assert.assertTrue(Resolver.class.isAssignableFrom(registeredResource.getResolver().getClass()));
 
@@ -174,9 +182,11 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class);
-        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+        context.registerObject(Patient.class, Cohort.class, Observation.class);
+        context.registerAlgorithm(CohortAlgorithm.class, CohortMemberAlgorithm.class, PatientAlgorithm.class,
+                ObservationAlgorithm.class);
+        context.registerResolver(CohortResolver.class, CohortMemberResolver.class, PatientResolver.class,
+                ObservationResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -203,9 +213,11 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class);
-        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+        context.registerObject(Patient.class, Cohort.class, Observation.class);
+        context.registerAlgorithm(CohortAlgorithm.class, CohortMemberAlgorithm.class, PatientAlgorithm.class,
+                ObservationAlgorithm.class);
+        context.registerResolver(CohortResolver.class, CohortMemberResolver.class, PatientResolver.class,
+                ObservationResolver.class);
 
         context.registerResources(resourceFile);
 
@@ -310,9 +322,11 @@ public class ContextTest {
         Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
         Context context = injector.getInstance(Context.class);
 
-        context.registerObject(Patient.class);
-        context.registerAlgorithm(CohortMemberAlgorithm.class, PatientAlgorithm.class);
-        context.registerResolver(CohortMemberResolver.class, PatientResolver.class);
+        context.registerObject(Patient.class, Cohort.class, Observation.class);
+        context.registerAlgorithm(CohortAlgorithm.class, CohortMemberAlgorithm.class, PatientAlgorithm.class,
+                ObservationAlgorithm.class);
+        context.registerResolver(CohortResolver.class, CohortMemberResolver.class, PatientResolver.class,
+                ObservationResolver.class);
 
         context.registerResources(resourceFile);
 

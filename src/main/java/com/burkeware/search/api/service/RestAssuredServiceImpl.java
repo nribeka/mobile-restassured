@@ -61,7 +61,7 @@ public class RestAssuredServiceImpl implements RestAssuredService {
         String auth = resolver.getUser() + ":" + resolver.getPassword();
         String basicAuth = "Basic " + new String(new Base64().encode(auth.getBytes()));
 
-        URL url = new URL(resolver.resolve(searchString));
+        URL url = new URL(resource.getUri(searchString));
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("Authorization", basicAuth);
 

@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -170,6 +171,16 @@ public class RestAssuredServiceTest {
     }
 
     /**
+     * @verifies throw IOException if the key and class unable to return unique object
+     * @see RestAssuredService#getObject(String, Class)
+     */
+    @Test(expected = IOException.class)
+    public void getObject_shouldThrowIOExceptionIfTheKeyAndClassUnableToReturnUniqueObject() throws Exception {
+        Patient patient = service.getObject("name:A*", Patient.class);
+        Assert.assertNull(patient);
+    }
+
+    /**
      * @verifies return object with matching key
      * @see RestAssuredService#getObject(String, com.burkeware.search.api.resource.Resource)
      */
@@ -202,6 +213,17 @@ public class RestAssuredServiceTest {
     }
 
     /**
+     * @verifies throw IOException if the key and resource unable to return unique object
+     * @see RestAssuredService#getObject(String, com.burkeware.search.api.resource.Resource)
+     */
+    @Test(expected = IOException.class)
+    public void getObject_shouldThrowIOExceptionIfTheKeyAndResourceUnableToReturnUniqueObject() throws Exception {
+        Resource resource = context.getResource("Cohort Member Resource");
+        Patient patient = (Patient) service.getObject("name:A*", resource);
+        Assert.assertNull(patient);
+    }
+
+    /**
      * @verifies return all object matching the search search string and class
      * @see RestAssuredService#getObjects(String, Class)
      */
@@ -223,6 +245,34 @@ public class RestAssuredServiceTest {
     @Test
     public void getObjects_shouldReturnEmptyListWhenNoObjectMatchTheSearchStringAndClass() throws Exception {
         List<Patient> patients = service.getObjects("name:Zz*", Patient.class);
+        Assert.assertNotNull(patients);
+        Assert.assertTrue(patients.size() == 0);
+    }
+
+    /**
+     * @verifies return all object matching the search search string and resource
+     * @see RestAssuredService#getObjects(String, com.burkeware.search.api.resource.Resource)
+     */
+    @Test
+    public void getObjects_shouldReturnAllObjectMatchingTheSearchSearchStringAndResource() throws Exception {
+        Resource resource = context.getResource("Cohort Member Resource");
+        List<Object> patients = service.getObjects("name:Ab*", resource);
+        Assert.assertNotNull(patients);
+        Assert.assertTrue(patients.size() > 0);
+        for (Object patient : patients) {
+            Assert.assertNotNull(patient);
+            Assert.assertEquals(Patient.class, patient.getClass());
+        }
+    }
+
+    /**
+     * @verifies return empty list when no object match the search string and resource
+     * @see RestAssuredService#getObjects(String, com.burkeware.search.api.resource.Resource)
+     */
+    @Test
+    public void getObjects_shouldReturnEmptyListWhenNoObjectMatchTheSearchStringAndResource() throws Exception {
+        Resource resource = context.getResource("Cohort Member Resource");
+        List<Object> patients = service.getObjects("name:Zz*", resource);
         Assert.assertNotNull(patients);
         Assert.assertTrue(patients.size() == 0);
     }

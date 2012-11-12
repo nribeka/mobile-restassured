@@ -23,6 +23,7 @@ public abstract class BaseLogger implements Logger {
         this.logLevel = LogLevel.INFO;
     }
 
+    @Inject
     protected BaseLogger(final LogLevel logLevel) {
         this.logLevel = logLevel;
     }
