@@ -33,6 +33,7 @@ public class FactoryModule extends AbstractModule {
      * Configures a {@link com.google.inject.Binder} via the exposed methods.
      *
      * @should bind instances of factory and string
+     * @should bind instances as singleton when specified
      */
     @Override
     protected void configure() {
@@ -51,8 +52,6 @@ public class FactoryModule extends AbstractModule {
 
         bind(new TypeLiteral<Registry<String, Class>>() {})
                 .toInstance(new DefaultRegistry<String, Class>());
-
-        bind(DefaultRegistry.class).in(Singleton.class);
 
         bind(new TypeLiteral<Factory<Algorithm>>() {})
                 .to(DefaultAlgorithmFactory.class);
