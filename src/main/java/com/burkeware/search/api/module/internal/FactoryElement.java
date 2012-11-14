@@ -11,10 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.burkeware.search.api.sample.domain;
+package com.burkeware.search.api.module.internal;
 
-import com.burkeware.search.api.module.internal.RegistryElement;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@RegistryElement
-public class Encounter {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface FactoryElement {
 }

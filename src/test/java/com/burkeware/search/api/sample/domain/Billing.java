@@ -13,5 +13,8 @@
  */
 package com.burkeware.search.api.sample.domain;
 
+import com.burkeware.search.api.module.internal.RegistryElement;
+
+@RegistryElement
 public class Billing {
 }

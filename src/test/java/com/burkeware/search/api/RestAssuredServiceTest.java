@@ -14,8 +14,6 @@
 
 package com.burkeware.search.api;
 
-import com.burkeware.search.api.module.FactoryModule;
-import com.burkeware.search.api.module.SearchModule;
 import com.burkeware.search.api.module.UnitTestModule;
 import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.sample.algorithm.CohortAlgorithm;
@@ -30,8 +28,6 @@ import com.burkeware.search.api.sample.resolver.CohortResolver;
 import com.burkeware.search.api.sample.resolver.ObservationResolver;
 import com.burkeware.search.api.sample.resolver.PatientResolver;
 import com.burkeware.search.api.util.StringUtil;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -53,36 +49,25 @@ public class RestAssuredServiceTest {
 
     public static final String FILE_PATIENT_NAME = "Testarius Ambote Indakasi";
 
-    private Context context;
+    private ServiceContext serviceContext;
 
     private RestAssuredService service;
 
     @Before
     public void prepare() throws Exception {
 
-        Injector injector = Guice.createInjector(new SearchModule(), new FactoryModule(), new UnitTestModule());
-
-        context = injector.getInstance(Context.class);
+        Context.initialize(new UnitTestModule());
         // register classes for the testing (algorithms, resolver, object)
-        context.registerAlgorithm(
-                PatientAlgorithm.class,
-                CohortAlgorithm.class,
-                CohortMemberAlgorithm.class,
+        Context.registerAlgorithm(PatientAlgorithm.class, CohortAlgorithm.class, CohortMemberAlgorithm.class,
                 ObservationAlgorithm.class);
-        context.registerResolver(
-                PatientResolver.class,
-                CohortResolver.class,
-                CohortMemberResolver.class,
+        Context.registerResolver(PatientResolver.class, CohortResolver.class, CohortMemberResolver.class,
                 ObservationResolver.class);
-        context.registerObject(
-                Patient.class,
-                Cohort.class,
-                Observation.class);
+        Context.registerObject(Patient.class, Cohort.class, Observation.class);
 
         URL j2l = RestAssuredService.class.getResource("sample/j2l");
-        context.registerResources(new File(j2l.getPath()));
+        Context.registerResources(new File(j2l.getPath()));
 
-        service = injector.getInstance(RestAssuredService.class);
+        service = Context.getService();
     }
 
     /**
@@ -94,17 +79,17 @@ public class RestAssuredServiceTest {
 
         Resource resource = null;
 
-        resource = context.getResource("Cohort Resource");
+        resource = Context.getResource("Cohort Resource");
         Assert.assertNotNull(resource);
         service.loadObjects(StringUtil.EMPTY, resource);
         List<Cohort> cohorts = service.getObjects(StringUtil.EMPTY, Cohort.class);
         for (Cohort cohort : cohorts) {
-            resource = context.getResource("Cohort Member Resource");
+            resource = Context.getResource("Cohort Member Resource");
             Assert.assertNotNull(resource);
             service.loadObjects(cohort.getUuid(), resource);
             List<Patient> patients = service.getObjects(StringUtil.EMPTY, Patient.class);
             for (Patient patient : patients) {
-                resource = context.getResource("Observation Resource");
+                resource = Context.getResource("Observation Resource");
                 Assert.assertNotNull(resource);
                 service.loadObjects(patient.getUuid(), resource);
             }
@@ -131,7 +116,7 @@ public class RestAssuredServiceTest {
     public void loadObjects_shouldLoadObjectFromFilesystemBasedOnTheResourceDescription() throws Exception {
 
         URL corpus = RestAssuredService.class.getResource("sample/corpus");
-        Resource resource = context.getResource("Patient Resource");
+        Resource resource = Context.getResource("Patient Resource");
         Assert.assertNotNull(resource);
         service.loadObjects(StringUtil.EMPTY, resource, new File(corpus.getPath()));
 
@@ -187,7 +172,7 @@ public class RestAssuredServiceTest {
     @Test
     public void getObject_shouldReturnObjectWithMatchingKey() throws Exception {
 
-        Resource resource = context.getResource("Cohort Member Resource");
+        Resource resource = Context.getResource("Cohort Member Resource");
         Patient patient = (Patient) service.getObject(StringUtil.quote(REST_PATIENT_UUID), resource);
         Assert.assertNotNull(patient);
         Assert.assertEquals(Patient.class, patient.getClass());
@@ -202,11 +187,11 @@ public class RestAssuredServiceTest {
         Patient patient;
         Resource resource;
 
-        resource = context.getResource("Patient Resource");
+        resource = Context.getResource("Patient Resource");
         patient = (Patient) service.getObject(StringUtil.quote(REST_PATIENT_UUID), resource);
         Assert.assertNull(patient);
 
-        resource = context.getResource("Cohort Member Resource");
+        resource = Context.getResource("Cohort Member Resource");
         patient = (Patient) service.getObject(StringUtil.quote(REST_PATIENT_UUID), resource);
         Assert.assertNotNull(patient);
         Assert.assertEquals(Patient.class, patient.getClass());
@@ -218,7 +203,7 @@ public class RestAssuredServiceTest {
      */
     @Test(expected = IOException.class)
     public void getObject_shouldThrowIOExceptionIfTheKeyAndResourceUnableToReturnUniqueObject() throws Exception {
-        Resource resource = context.getResource("Cohort Member Resource");
+        Resource resource = Context.getResource("Cohort Member Resource");
         Patient patient = (Patient) service.getObject("name:A*", resource);
         Assert.assertNull(patient);
     }
@@ -255,7 +240,7 @@ public class RestAssuredServiceTest {
      */
     @Test
     public void getObjects_shouldReturnAllObjectMatchingTheSearchSearchStringAndResource() throws Exception {
-        Resource resource = context.getResource("Cohort Member Resource");
+        Resource resource = Context.getResource("Cohort Member Resource");
         List<Object> patients = service.getObjects("name:Ab*", resource);
         Assert.assertNotNull(patients);
         Assert.assertTrue(patients.size() > 0);
@@ -271,7 +256,7 @@ public class RestAssuredServiceTest {
      */
     @Test
     public void getObjects_shouldReturnEmptyListWhenNoObjectMatchTheSearchStringAndResource() throws Exception {
-        Resource resource = context.getResource("Cohort Member Resource");
+        Resource resource = Context.getResource("Cohort Member Resource");
         List<Object> patients = service.getObjects("name:Zz*", resource);
         Assert.assertNotNull(patients);
         Assert.assertTrue(patients.size() == 0);
@@ -287,7 +272,7 @@ public class RestAssuredServiceTest {
         Assert.assertNotNull(patient);
         Assert.assertEquals(Patient.class, patient.getClass());
 
-        Resource resource = context.getResource("Cohort Member Resource");
+        Resource resource = Context.getResource("Cohort Member Resource");
         Patient deletedPatient = (Patient) service.invalidate(patient, resource);
         Assert.assertNotNull(deletedPatient);
         Assert.assertEquals(Patient.class, deletedPatient.getClass());

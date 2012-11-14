@@ -11,10 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package com.burkeware.search.api.sample.domain;
+package com.burkeware.search.api.module.internal;
 
-import com.burkeware.search.api.module.internal.RegistryElement;
+public interface Scanner {
 
-@RegistryElement
-public class Encounter {
+    /**
+     * Scan a package path and then register classes according to their type in the search api registry.
+     */
+    void scan();
 }

@@ -13,10 +13,12 @@
  */
 package com.burkeware.search.api.sample.domain;
 
+import com.burkeware.search.api.module.internal.RegistryElement;
 import com.burkeware.search.api.util.StringUtil;
 
 import java.util.Date;
 
+@RegistryElement
 public class Observation {
 
     private String uuid;
