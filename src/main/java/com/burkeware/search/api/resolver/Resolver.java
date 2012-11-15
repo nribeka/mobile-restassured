@@ -24,7 +24,7 @@ public interface Resolver {
      */
     String resolve(final String searchString);
 
-    String getUser();
+    String getUsername();
 
     String getPassword();
 }

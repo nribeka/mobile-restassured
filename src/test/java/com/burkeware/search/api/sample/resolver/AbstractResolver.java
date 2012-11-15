@@ -27,7 +27,7 @@ public abstract class AbstractResolver implements Resolver {
     }
 
     @Override
-    public String getUser() {
+    public String getUsername() {
         return "admin";
     }
 }

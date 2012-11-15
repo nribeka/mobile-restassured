@@ -24,7 +24,8 @@ public class UnitTestModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("/tmp/lucene");
+        String tmpDirectory = System.getProperty("java.io.tmpdir");
+        bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance(tmpDirectory);
         bind(String.class).annotatedWith(Names.named("configuration.lucene.document.key")).toInstance("uuid");
 
         bind(LogLevel.class).toInstance(LogLevel.DEBUG);

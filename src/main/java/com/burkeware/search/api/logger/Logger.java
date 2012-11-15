@@ -71,6 +71,23 @@ public interface Logger {
     void warn(final String source, final String message, final Throwable throwable);
 
     /**
+     * Log an error message.
+     *
+     * @param source  the source of the message
+     * @param message the message to log
+     */
+    void error(final String source, final String message);
+
+    /**
+     * Log an error message.
+     *
+     * @param source    the source of the message
+     * @param message   the message to log
+     * @param throwable throwable object to log
+     */
+    void error(final String source, final String message, final Throwable throwable);
+
+    /**
      * Log a debug message.
      *
      * @param source  the source of the message

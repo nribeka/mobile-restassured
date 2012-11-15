@@ -38,9 +38,20 @@ public class Context {
     }
 
     public static void initialize(final Module... modules) {
-        if (injector == null)
-            injector = Guice.createInjector(new SearchModule(), new FactoryModule(), Modules.combine(modules));
+        injector = Guice.createInjector(new SearchModule(), new FactoryModule(), Modules.combine(modules));
         serviceContext = injector.getInstance(ServiceContext.class);
+    }
+
+    /**
+     * Get an instance of a registered component inside this guice framework. This call will be delegated to the
+     * internal injector implementation.
+     *
+     * @param clazz the type of the registered component
+     * @param <T>   the generic type of the object
+     * @return the object implementation
+     */
+    public static <T> T getInstance(final Class<T> clazz) {
+        return injector.getInstance(clazz);
     }
 
     /**

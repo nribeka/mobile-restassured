@@ -13,15 +13,15 @@
  */
 package com.burkeware.search.api.logger;
 
-import com.burkeware.search.api.util.StringUtil;
-
 public class LogLevel {
 
     public static final LogLevel INFO = new LogLevel("INFO", 1);
 
     public static final LogLevel WARN = new LogLevel("WARN", 2);
 
-    public static final LogLevel DEBUG = new LogLevel("DEBUG", 3);
+    public static final LogLevel ERROR = new LogLevel("ERROR", 3);
+
+    public static final LogLevel DEBUG = new LogLevel("DEBUG", 4);
 
     private String name;
 
@@ -40,14 +40,21 @@ public class LogLevel {
         return this.name;
     }
 
+
     @Override
-    public int hashCode() {
-        return level.hashCode() + name.hashCode();
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LogLevel)) return false;
+
+        final LogLevel logLevel = (LogLevel) o;
+
+        return (name.equals(logLevel.name) && level.equals(logLevel.level));
     }
 
     @Override
-    public boolean equals(final Object object) {
-        LogLevel logLevel = (LogLevel) object;
-        return (StringUtil.equals(this.name, logLevel.name) && level.equals(logLevel.level));
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + level.hashCode();
+        return result;
     }
 }

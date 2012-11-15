@@ -106,6 +106,29 @@ public abstract class BaseLogger implements Logger {
     }
 
     /**
+     * Log an error message.
+     *
+     * @param source  the source of the message
+     * @param message the message to log
+     */
+    @Override
+    public void error(final String source, final String message) {
+        log(LogLevel.ERROR, source, message, null);
+    }
+
+    /**
+     * Log an error message.
+     *
+     * @param source    the source of the message
+     * @param message   the message to log
+     * @param throwable throwable object to log
+     */
+    @Override
+    public void error(final String source, final String message, final Throwable throwable) {
+        log(LogLevel.ERROR, source, message, throwable);
+    }
+
+    /**
      * Log a debug message.
      *
      * @param source  the source of the message
