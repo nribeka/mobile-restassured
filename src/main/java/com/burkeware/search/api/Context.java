@@ -20,7 +20,6 @@ import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
@@ -53,10 +52,6 @@ public class Context {
      */
     public static <T> T getInstance(final Class<T> clazz) {
         return injector.getInstance(clazz);
-    }
-
-    public static <T> T getInstance(final Key<? extends T> key) {
-        return injector.getInstance(key);
     }
 
     /**
