@@ -14,6 +14,9 @@
 package com.burkeware.search.api.sample.resolver;
 
 import com.burkeware.search.api.resolver.Resolver;
+import com.burkeware.search.api.util.ResolverUtil;
+
+import java.net.URLConnection;
 
 public abstract class AbstractResolver implements Resolver {
 
@@ -22,12 +25,9 @@ public abstract class AbstractResolver implements Resolver {
     protected final String WEB_CONTEXT = "openmrs-standalone/";
 
     @Override
-    public String getPassword() {
-        return "test";
-    }
-
-    @Override
-    public String getUsername() {
-        return "admin";
+    public URLConnection authenticate(final URLConnection connection) {
+        String basicAuth = ResolverUtil.getBasicAuth("admin", "test");
+        connection.setRequestProperty("Authorization", basicAuth);
+        return connection;
     }
 }

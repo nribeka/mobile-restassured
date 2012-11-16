@@ -21,7 +21,7 @@ import com.burkeware.search.api.resource.Resource;
 import com.burkeware.search.api.resource.SearchableField;
 import com.burkeware.search.api.serialization.Algorithm;
 import com.burkeware.search.api.util.CollectionUtil;
-import com.burkeware.search.api.util.IOUtil;
+import com.burkeware.search.api.util.StreamUtil;
 import com.burkeware.search.api.util.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -354,7 +354,7 @@ public class DefaultIndexer implements Indexer {
     @Override
     public void loadObjects(final Resource resource, final Reader reader)
             throws ParseException, IOException {
-        String json = IOUtil.readAsString(reader);
+        String json = StreamUtil.readAsString(reader);
         Object jsonObject = JsonPath.read(json, resource.getRootNode());
         if (jsonObject instanceof JSONArray) {
             JSONArray array = (JSONArray) jsonObject;

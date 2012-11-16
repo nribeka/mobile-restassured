@@ -19,7 +19,6 @@ import com.burkeware.search.api.internal.lucene.Indexer;
 import com.burkeware.search.api.resolver.Resolver;
 import com.burkeware.search.api.resource.Resource;
 import com.google.inject.Inject;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.lucene.queryParser.ParseException;
 
 import java.io.File;
@@ -58,12 +57,9 @@ public class RestAssuredServiceImpl implements RestAssuredService {
 
         Resolver resolver = resource.getResolver();
 
-        String auth = resolver.getUsername() + ":" + resolver.getPassword();
-        String basicAuth = "Basic " + new String(new Base64().encode(auth.getBytes()));
-
-        URL url = new URL(resource.getUri(searchString));
+        URL url = new URL(resolver.resolve(searchString));
         URLConnection connection = url.openConnection();
-        connection.setRequestProperty("Authorization", basicAuth);
+        connection = resolver.authenticate(connection);
 
         indexer.loadObjects(resource, connection.getInputStream());
         indexer.commit();

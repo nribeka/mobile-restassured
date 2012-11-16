@@ -15,7 +15,7 @@ package com.burkeware.search.api.sample.algorithm;
 
 import com.burkeware.search.api.sample.domain.Observation;
 import com.burkeware.search.api.serialization.Algorithm;
-import com.burkeware.search.api.util.ISO8601;
+import com.burkeware.search.api.util.ISO8601Util;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONObject;
 
@@ -57,7 +57,7 @@ public class ObservationAlgorithm implements Algorithm {
 
         String obsDatetime = JsonPath.read(jsonObject, "$.obsDatetime");
         try {
-            observation.setObservationDate(ISO8601.toCalendar(obsDatetime).getTime());
+            observation.setObservationDate(ISO8601Util.toCalendar(obsDatetime).getTime());
         } catch (ParseException e) {
             // suppress the exception
         }

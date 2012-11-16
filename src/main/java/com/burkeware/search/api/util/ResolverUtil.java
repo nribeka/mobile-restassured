@@ -11,20 +11,15 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+package com.burkeware.search.api.util;
 
-package com.burkeware.search.api.resolver;
+import org.apache.commons.codec.binary.Base64;
 
-import java.net.URLConnection;
+public class ResolverUtil {
 
-public interface Resolver {
+    public static String getBasicAuth(final String username, final String password) {
+        String auth = username + ":" + password;
+        return "Basic " + new String(new Base64().encode(auth.getBytes()));
+    }
 
-    /**
-     * Return the full REST resource based on the search string passed to the method.
-     *
-     * @param searchString the search string
-     * @return full URI to the REST resource
-     */
-    String resolve(final String searchString);
-
-    URLConnection authenticate(final URLConnection connection);
 }
